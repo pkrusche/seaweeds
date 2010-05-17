@@ -1,0 +1,28 @@
+
+kernel void compnet_stage(char x[], char y[], int offset, int len, int x_start, int y_end, int p[], out int o <>) {
+	int idx = instance().x;
+	if(idx >= offset && idx < offset+len) {
+		int idxd2 = (len - idx+offset - 1) >> 1; 
+		int match = ((int)x[x_start + idxd2] == (int)y[y_end - idxd2]);
+		int minmax = ((idx-offset) & 1) == 0 ? 1 : 0;
+
+		if(match != 0) {
+			o = p[idx];
+		} else {
+			int idx_min = ((idx-offset) & ~1) + offset;
+			int idx_max = ((idx-offset) & ~1) + offset + 1;
+			if (minmax == 0) {
+				o = min(p[idx_min], p[idx_max]);
+			} else {
+				o = max(p[idx_min], p[idx_max]);
+			}
+		}
+	} else {
+		o = p[idx];
+	}
+}
+
+kernel void invert_permutation(int p<>, out int o[]) {
+	int idx = instance().x;
+	o[p] = idx;
+}

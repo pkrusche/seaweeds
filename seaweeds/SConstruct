@@ -1,0 +1,592 @@
+###############################################################################
+# Copyright (C) 2007   Peter Krusche, The University of Warwick         
+# peter@dcs.warwick.ac.uk                                
+###############################################################################
+
+import os
+import os.path
+import glob
+import string
+import re
+import sys
+import platform;
+
+from SCons.Defaults import *
+
+###############################################################################
+# read options and configure directories
+###############################################################################
+
+optfilename = 'opts.py'
+
+# Try to find options file based on hostname
+optfilename_local = 'opts_'+platform.uname()[1]+'_'+platform.uname()[0]+'_'+platform.uname()[4]+'.py'
+if len(glob.glob(optfilename_local)) > 0:
+    optfilename = optfilename_local
+else:
+    print 'To use specific options for this system, use options file "'+optfilename_local+'"'
+
+print 'Using options from ' + optfilename
+
+subarch = platform.uname()[4]
+opts = Variables(optfilename)
+
+# these are the options that can be specified through the command line
+opts.AddVariables(
+	EnumVariable('mode', 'Build mode: set to debug or release', 'debug',
+                    allowed_values = ('debug', 'release'),
+                    ignorecase = 1),
+	EnumVariable('simd_mode', 
+				 'Vector instruction set to use: mmx, sse2, or none', 'sse2',
+                    allowed_values = ('mmx', 'sse2', 'nommx'),
+                    ignorecase = 1),
+	BoolVariable('tests', 'Run tests', 0),
+	BoolVariable('benchmarks', 'Run benchmarks', 0),
+	BoolVariable('tuning', 'Run tuning', 0),
+	BoolVariable('profile', 'Enable profiling. Also enables debug information.', 0),
+	BoolVariable('debuginfo', 'Include debug information also in release version.', 1),
+	BoolVariable('docs', 'Build documentation', 0),
+	BoolVariable('configure', 'Perform configuration', 0),
+	BoolVariable('use_yasm', 'Use yasm instead of nasm', 1),
+	BoolVariable('use_ati_brook', 'Use ATI brook+', 0),
+	BoolVariable('sequential', 'Use sequential bsponmpi (no MPI)', 0),
+	('cl_stlfilt', 'Path to STLFilt for MSVC', ''),
+    ('gcc_stlfilt', 'Path to STLFilt for gcc', 'c++'),
+    ('win32_boostdir', 'Path to Boost library in Win32', 'C:\\Boost\\include'),
+    ('win32_lokidir', 'Path to Loki library in Win32', 'C:\\Boost\\include'),
+    ('win32_ccpdir', 'Path to Microsoft Compute Cluster Pack in Win32', 'C:\\Program Files\\Microsoft Compute Cluster Pack'),
+    ('win32_tbbdir', 'Path to tbb library in Win32', 'C:\\tbb'),
+    ('win32_bsponmpidir', 'Path to tbb library in Win32', 'C:\\bsponmpi'),
+    ('win32_bsp_cppdir', 'Path to tbb library in ', '..\\bsp_cpp'),
+    ('BROOKROOT', 'Path to ATI Stream SDK', ''),
+    ('QTDIR', 'Path to QT library in Win32', 'C:\\Qt'),
+	('toolset', 'Specify compiler and linker tools: gcc|default', 'default'),
+	('additional_lflags', 'Additional linker flags', ''),
+	('additional_cflags', 'Additional compiler flags', ''),
+	('MPICC', 'MPI c compiler wrapper (Unix only)', 'mpicc'),
+	('MPICXX', 'MPI c++ compiler wrapper (Unix only)', 'mpicxx'),
+	('MPILINK', 'MPI linker wrapper (Unix only)', 'mpicxx'),
+	)
+
+SCons.Defaults.DefaultEnvironment(tools = [])
+
+# read options before creating root environment
+readopts = Environment(tools = [], options = opts)
+use_ati = readopts['use_ati_brook']
+if int(readopts['tests']):
+	print "Will run tests."
+if int(readopts['benchmarks']):
+	print "Will run benchmarks."
+
+###############################################################################
+# Set up the root environment
+###############################################################################
+
+# add qt4 here if necessary
+platform_name = platform.uname()[0]
+if platform_name == 'Windows':
+	ttools = ['msvc', 'mslib', 'mslink', 'nasm', 'doxygen']
+#	ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
+elif platform_name == 'Linux':
+	ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
+else:
+	ttools = ['default', 'nasm', 'doxygen']
+
+if use_ati:
+	ttools.append('ati')
+
+root = Environment(
+    tools = ttools,
+    toolpath = ['site_scons/site_tools'],
+    options = opts,
+)
+Help(opts.GenerateHelpText(root))
+
+###############################################################################
+# Setup compiling parameters
+###############################################################################
+
+root.Append(
+	ENV = os.environ,
+	BINDIR = "#bin",
+	LIBDIR = "#lib",
+	SRCDIR = "#src",
+	)
+
+# dependency optimization
+root.SetOption('max_drift', 4)
+root.SetOption('implicit_cache', 1)
+root.SetOption('diskcheck', None)
+root.Ignore('', '')
+
+platform = ARGUMENTS.get('OS', root['PLATFORM'])
+mode = root['mode']
+toolset = root['toolset']
+profile = root['profile']
+sequential = root['sequential']
+debuginfo = root['debuginfo']
+arch_id = str(Platform()) + '_' + toolset + '_' + mode
+root.Prepend(PROGSUFFIX = "_"+arch_id) 
+
+win32_boostdir = root['win32_boostdir']
+win32_lokidir = root['win32_lokidir']
+win32_tbbdir = root['win32_tbbdir']
+win32_ccpdir = root['win32_ccpdir']
+win32_bsponmpidir = root['win32_bsponmpidir']
+win32_bsp_cppdir = root['win32_bsp_cppdir']
+
+cxx = str(root['CXX'])
+print "Compiling on platform "+ platform + " using mode " + mode + " and compiler " + cxx + "."
+
+root.Append(
+    CCFLAGS = ' $CFLAGS',
+    CPPPATH = ['#src', '#libs/FC++.1.5','#libs/pthreads_win32/include'],
+    LIBPATH = ['#libs','#libs/pthreads_win32/lib'],
+)
+
+if platform == 'win32':
+    # Win32 specific setup
+      
+    boost_include = ''
+    boost_lib = ''
+    # see if we can find boost
+    dirs = glob.glob(win32_boostdir+"\\*")
+    if len(dirs) > 0:
+    	dirs.sort()
+    	boost_include = dirs[len(dirs) - 1]
+    	boost_lib = win32_boostdir+"\\..\\lib"
+    
+    # boost include path must go into CCFLAGS because the scons include dependency
+    # parser can die otherwise
+    if cxx != 'g++':
+		root.Append(
+			CCFLAGS = ' /D_SCL_SECURE_NO_WARNINGS /Isrc /I'+boost_include ,
+			LIBPATH = [ boost_lib ],
+		)
+
+		if subarch == 'AMD64':
+			root.Append(
+				ARFLAGS = '/MACHINE:X64',
+				LINKFLAGS = '/MACHINE:X64',
+			)
+		else:
+			root.Append(
+				ARFLAGS = '/MACHINE:X86',
+				LINKFLAGS = '/MACHINE:X86',
+			)
+
+    else:
+		root.Append(
+			CCFLAGS = ' -Isrc -I'+boost_include ,
+			LIBPATH = [ boost_lib ],
+		)
+    
+    # see if we can find loki
+    root.Append(
+        CPPPATH = [ win32_lokidir+'\\include' ],
+        LIBPATH = [ win32_lokidir+'\\lib' ],
+    )
+    
+    if mode == 'debug':
+		root.Append(
+			LIBS = 'loki_D'
+		)		
+    else:
+		root.Append(
+			LIBS = 'loki'
+		)		
+
+    # see if we can find tbb
+    root.Append(
+        CPPPATH = [ win32_tbbdir+'\\include' ],
+        # we require that the right libraries are copied here, since it's a lot of 
+        # work to guess the right system and folder.
+        LIBPATH = [ win32_tbbdir+'\\lib' ],
+    )   
+
+    # see if we can find bsponmpi
+    root.Append(
+        CPPPATH = [ win32_bsponmpidir +'\\include' ],
+        LIBPATH = [ win32_bsponmpidir +'\\lib' ],
+    )
+    
+    # see if we can find bsp_cpp
+    root.Append(
+        CPPPATH = [ win32_bsp_cppdir +'\\include' ],
+        LIBPATH = [ win32_bsp_cppdir +'\\lib' ],
+    )
+else:
+		# Unix-like stuff
+		root.Append(
+			CCFLAGS = ' $CFLAGS',
+			CPPPATH = ['.', '#src','#libs/FC++.1.5', '#libs/include'],
+			LIBPATH = ['.', '#libs'],
+			LIBS = ["loki"],
+		)
+
+
+root.Append(
+	CCFLAGS = root['additional_cflags'],
+	LINKFLAGS = root['additional_lflags'],
+	)
+
+###############################################################################
+# Setup debug / release mode flags
+###############################################################################
+
+if string.find(cxx, 'g++') >= 0 or string.find(cxx, 'c++') >= 0 or root['toolset'] == 'gcc':
+	if mode == 'debug':
+		root.Append(
+		CCFLAGS=' -g -O0',
+		ASFLAGS=' -g dwarf2',
+		)
+	elif mode == 'release':
+		if debuginfo:
+			root.Append(
+				CCFLAGS=' -g ',
+				LINKFLAGS=' -g ',
+			)
+		if profile:
+			root.Append(
+				CCFLAGS=' -pg -O2',
+				LINKFLAGS=' -pg',
+			)
+		else:
+			root.Append(
+			CCFLAGS=' -O2',
+			)
+		
+	if root['gcc_stlfilt']:
+	   root.Replace(CXX = root['gcc_stlfilt'])
+	print "using g++"
+else:
+	if platform == 'win32':
+		msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
+		msvc_linkflags = " /DEBUG"
+		if mode == 'debug':
+			root.Append(
+			CCFLAGS='/MDd /Od /Zi /W3 /RTC1 /RTCu /RTCs'+msvc_ccflags,
+			LINKFLAGS='/DEBUG '+msvc_linkflags,
+			)
+		elif mode == 'release':
+			root.Append( 
+			CCFLAGS='/MD /O2 '+msvc_ccflags,
+			LINKFLAGS=msvc_linkflags
+			)
+			if debuginfo or profile:
+				root.Append(
+					CCFLAGS=' /Zi ',
+					LINKFLAGS=' /DEBUG '
+				)							
+			
+		if root['cl_stlfilt']:
+			root.Replace(
+				CXX = root['cl_stlfilt'],
+			)
+		print "using MSVC"
+
+###############################################################################
+# Setup nasm/yasm object file types
+###############################################################################
+
+# see if we use yasm
+if int(root['use_yasm']):
+	root.Replace(AS = 'yasm')
+	
+if platform == 'win32':
+	if subarch == 'AMD64':
+	    root.Append(ASFLAGS = " -f win64 ")
+	else:
+	    root.Append(ASFLAGS = " -f win32 ")
+	
+	if mode == 'debug' or profile:
+		root.Append(ASFLAGS = " -g cv8")
+elif platform == 'darwin':
+    root.Append(ASFLAGS = " -f macho ")	
+else:
+    if subarch == 'x86_64':
+         root.Append(ASFLAGS = " -f elf64 ")
+    else:
+         root.Append(ASFLAGS = " -f elf ")
+
+###############################################################################
+# Setup TBB library linking
+###############################################################################
+
+if mode=='debug':
+	root.Append(LIBS = ['tbb_debug'])
+else:
+	root.Append(LIBS = ['tbb'])
+
+###############################################################################
+# Check for STLFilt
+###############################################################################
+
+def run(program, *args):
+	# find executable
+    for path in string.split(os.environ["PATH"], os.pathsep):
+        file = os.path.join(path, program) + ".exe"
+        try:
+            return os.spawnv(os.P_WAIT, file, (file,) + args)
+        except os.error:
+            pass
+    raise os.error, "cannot find executable"
+
+if platform != 'win32':
+	try:
+		run(root['gcc_stlfilt'])
+		root["CXX"] = root['gcc_stlfilt']
+	except os.error:
+		print "Gfilt not found, using g++"
+
+###############################################################################
+# Setup automatic parameter tuning
+###############################################################################
+
+def tuning_builder(target, source, env):
+	tuning_config_h_begin = """
+/*
+ * This file is generated automatically and will be overwritten.
+ */ 
+#ifndef __TUNING_CONFIG_H__
+#define __TUNING_CONFIG_H__
+
+"""
+	
+	tuning_config_h_end = """
+
+#endif /* __TUNING_CONFIG_H__ */
+
+"""
+	
+	if int(env['tuning']):
+	#	env.Command('tuning_'+arch_id+'.dat', '#bin/rangetuning', "bin/rangetuning > $TARGET")
+		tuneresults = ""
+	
+		# print summary and write to file
+		print "Flags added by tuning phase: \n" + tuneresults
+		f = open(str(target[0]), 'w')
+		f.write(tuning_config_h_begin);
+		f.write(tuneresults);
+		f.write(tuning_config_h_end);
+	else:
+		if not os.path.exists(str(target[0])):
+			f = open(str(target[0]), 'w')
+			f.write(tuning_config_h_begin);
+			f.write(tuning_config_h_end);
+
+if int(root['tuning']):
+	bld = Builder(action = tuning_builder,
+		          suffix = '.h',
+			      src_suffix = '')
+	root.Append(
+		BUILDERS = { "Tuning" : bld }
+	)
+	print "Will perform tuning."
+
+###############################################################################
+# Automatic configuration code
+###############################################################################
+
+loki_test_cpp = """
+
+#include <loki/SmartPtr.h>
+
+int main(int argc, char** argv) {
+	Loki::SmartPtr<int> p(new int(0));
+	
+	return *p;
+}
+
+"""
+
+def CheckLoki(context):
+    context.Message('Checking for Loki library...')
+    result = context.TryLink(loki_test_cpp, '.cpp')
+    context.Result(result)
+    return result
+
+# configure environment
+if root['configure'] != 0:
+	print "Performing autoconfiguration"
+	autoconfig_h_begin = """
+/*
+ * This file is generated automatically and will be overwritten.
+ */ 
+#ifndef __AUTOCONFIG_H__
+#define __AUTOCONFIG_H__
+
+"""
+	
+	autoconfig_h_end = """
+
+#endif /* __AUTOCONFIG_H__ */
+
+"""	
+	conf = Configure(root, custom_tests = {'CheckLoki' : CheckLoki})
+	autohdr = open("autoconfig.h", 'w')
+	autohdr.write(autoconfig_h_begin);
+
+	if subarch == 'x86_64' or subarch == 'AMD64':
+		autohdr.write("#define _X86_64 \n")
+		
+	if root['simd_mode'] != 'nommx':
+		autohdr.write("#define _HAVE_SIMD \n")
+
+	if root['simd_mode'] == 'sse2':
+		autohdr.write("#define _HAVE_SSE2 \n")
+	
+	if use_ati:
+		autohdr.write("#define _HAVE_ATI_GPU \n")	
+
+	if not conf.CheckLoki():
+		print 'You need the Loki C++ library.'
+		
+#	if platform == 'win32':
+#		autohdr.write('#pragma optimize("g", off) // disable global optimization\n')
+
+	autohdr.write(autoconfig_h_end)
+	root = conf.Finish()
+	autohdr.close()
+
+if int(root['tuning']):
+	arch_id = arch_id + "_tuned"
+
+###############################################################################
+# The library of assembler optimized integer operations
+###############################################################################
+
+vec_machineword_asm_suffix = root['simd_mode']
+if subarch == 'AMD64':
+	print "using assembler code for " + subarch
+	xasmlib_files = ['src/xasmlib/machineword_AMD64.asm', 'src/xasmlib/machineword_AMD64_'+vec_machineword_asm_suffix+'.asm', 'src/xasmlib/xasmlib.c']	
+elif subarch == 'x86_64':
+	print "using assembler code for " + subarch
+	xasmlib_files = ['src/xasmlib/machineword_x86_64.asm', 'src/xasmlib/machineword_x86_64_'+vec_machineword_asm_suffix+'.asm', 'src/xasmlib/xasmlib.c']
+else:
+	print "using assembler code for " + subarch
+	xasmlib_files = ['src/xasmlib/machineword_x86.asm', 'src/xasmlib/machineword_x86_'+vec_machineword_asm_suffix+'.asm', 'src/xasmlib/xasmlib.c']
+	
+xasmlib = root.Library('libs/xasmlib', xasmlib_files)
+root.Append(LIBS = xasmlib)
+
+###############################################################################
+# ATI GPU accellerated code
+###############################################################################
+
+if use_ati:
+	root.Append(
+		CPPPATH = '$BROOK_CPPPATH', 
+		LIBPATH = '$BROOK_LIBPATH', 
+		LIBS = ['brook'],
+	)	
+		
+	gpulib_files = [ 
+		'src/gpulib/seaweeds.cpp',
+		root.BrCC('src/gpulib/seaweeds_gpu.br'), 
+	]
+	gpulib = root.Library('libs/gpulib', gpulib_files);
+	root.Append(LIBS = gpulib)
+
+###############################################################################
+# Setup MPI capable environment
+###############################################################################
+
+
+libsuffix = ''
+if sequential == 1:
+	libsuffix += 'sequential'
+if mode == 'debug':
+	libsuffix += '_debug'
+
+mpi = root.Clone()
+
+if sequential:
+	root.Append(LIBS = [
+		"bspcpp"+libsuffix,
+		"bsponmpi"+libsuffix]
+		)
+else:
+	root.Append(LIBS = [
+		"bspcppsequential"+libsuffix,
+		"bsponmpisequential"+libsuffix]
+		)
+
+mpi.Append(LIBS = ["bspcpp"+libsuffix])
+
+if not sequential:
+	if platform == 'win32':
+		win32_ccpdir = root['win32_ccpdir']
+		mpi.Append(	CPPPATH = win32_ccpdir+"\\Include",
+				LIBS = ["msmpi.lib", "msmpe.lib"]
+		  )
+		if subarch == 'AMD64':
+			mpi.Append(	LIBPATH = win32_ccpdir+"\\Lib\\amd64" )
+		else:
+			mpi.Append(	LIBPATH = win32_ccpdir+"\\Lib\\i386" )
+	else:
+		mpi.Replace(
+			CXX = root['MPICXX'],
+			LINK = root['MPILINK'],
+			CC = root['MPICC']
+		)
+	mpi.Append (
+		CPPDEFINES = "_HAVE_MPI",
+		LIBS = ["bsponmpi"+libsuffix]
+	)
+else:
+	mpi.Append (
+		CPPDEFINES = "_SEQUENTIAL",
+		LIBS = ["bsponmpi"+libsuffix]
+	)
+
+###############################################################################
+# Setup automatic parameter tuning
+###############################################################################
+
+nontuned = root.Clone()
+nontuned.Append(CCFLAGS = " -D_TUNING ")
+
+rangetuning_objects = nontuned.Object('src/tuning/rangetuning.cpp')
+Ignore(rangetuning_objects, 'tuning_config.h')
+
+nontuned.Program('bin/rangetuning', rangetuning_objects)
+
+#root.Tuning('tuning_config.h', [
+#	'bin/rangetuning'+dict['PROGSUFFIX'],
+#	])
+
+###############################################################################
+# Setup Cilk++ capable environment
+###############################################################################
+
+cilk = root.Clone()
+
+cilk.Tool('cilk')
+if platform == 'Windows':	# MSVC version
+	cilkname = "cilkpp"
+else: # GCC version
+	cilkname = "cilk++"
+
+cilk.Replace(
+	CXX = cilkname,
+	LINK = cilkname,
+)
+
+###############################################################################
+# Export our build environments for the SConscripts
+###############################################################################
+
+Export(['root', 'mpi', 'cilk', 'mode', 'arch_id'])
+
+###############################################################################
+# get SConscripts
+###############################################################################
+
+SConscript('src/SConscript')
+SConscript('src/tests/SConscript')
+#SConscript('benchmark/SConscript')
+
+if int(root['docs']):
+	SConscript('docs/SConscript')
+
