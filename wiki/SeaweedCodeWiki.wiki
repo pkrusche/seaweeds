@@ -7,12 +7,10 @@ Seaweed code download:
 
 [http://code.google.com/p/seaweeds/source/checkout]
 
-Collection of slides on seaweed-related talks: [wiki:talks]
+Collection of slides on seaweed-related talks: [Talks]
 
 Documentation of Seaweed Code: 
 
  * Compiling: [seaweeds_cpp]
- * Usage: seaweeds_cpp_usage
- * Download Binaries: seaweeds_binaries
-
-Benchmark results: seaweeds_performance
+ * Usage: [seaweeds_usage]
+ * Download Binaries: [seaweeds_binaries]
