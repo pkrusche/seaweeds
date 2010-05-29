@@ -1,6 +1,6 @@
 = Seaweeds: Parallel Sequence Alignment Tools =
 
-This is the starting page for the seaweed-based sequence alignment tools. There is not much here yet.
+This is the starting page for the seaweed-based sequence alignment tools. 
 
 Seaweed code download:
 
