@@ -10,7 +10,7 @@
 #include <fstream>
 #include <loki/Typelist.h>
 
-#include "config.h"
+#include "autoconfig.h"
 
 #include "bspcpp/tools/utilities.h"
 #include "seaweeds/ScoreMatrix.h"

@@ -3,7 +3,7 @@
  *   peter@dcs.warwick.ac.uk                                               *
  ***************************************************************************/
 
-#include "config.h"
+#include "autoconfig.h"
 
 #include "bspcpp/CommandLine.h"
 
