@@ -95,7 +95,7 @@ Remember that if you use dynamic linking versions of loki or other libraries, th
 
 === MacOS ===
 
-Compiling on MacOS Tiger is very similar to compiling on Linux.
+Compiling on MacOS X is very similar to compiling on Linux.
 
 Here is an options file to compile on the WSBC cluster:
 
