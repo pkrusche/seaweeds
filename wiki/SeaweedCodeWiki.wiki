@@ -11,7 +11,7 @@ Collection of slides on seaweed-related talks: [wiki:talks]
 
 Documentation of Seaweed Code: 
 
- * Compiling: seaweeds_cpp
+ * Compiling: [seaweeds_cpp]
  * Usage: seaweeds_cpp_usage
  * Download Binaries: seaweeds_binaries
 
