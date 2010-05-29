@@ -16,7 +16,8 @@ Optionally, you can use STLFilt [http://www.bdsoft.com/tools/stlfilt.html] for f
 
  * Boost -- get it at [http://www.boost.org/] or install the corresponding dev packages in Linux.
  * Loki  -- available at [http://loki-lib.sourceforge.net/]
- * Intel TBB -- precompiled binaries are available at [www.threadingbuildingblocks.org/]
+ * Intel TBB -- precompiled binaries are available at [http://www.threadingbuildingblocks.org/]
+ * Also, this project uses the BSPonMPI library [https://sourceforge.net/projects/bsponmpi/] version 0.3. You need to download and compile this library, and add its library/include paths to the compiler/linker search paths.
 
 == Compiling ==
 
@@ -121,6 +122,7 @@ All required libraries (boost, TBB and loki) have been installed into ~/lib and 
 ||win32_boostdir||Path to Boost library in Win32||'C:\\Boost\\include'||
 ||win32_lokidir||Path to Loki library in Win32||'C:\\Boost\\include'||
 ||win32_tbbdir||Path to TBB library in Win32||'C:\\tbb'||
-||QTDIR||Path to QT library||'C:\\Qt'||
+||win32_bsponmpidir||Path to bsponmpi library in Win32||'C:\\bsponmpi'||
+||sequential||Use sequential version of the bsponmpi library||0||
 ||toolset||Specify compiler and linker tools: gcc|icc|default||'default'||
 ||simd_mode||Specify which SIMD instructions to use: mmx, sse2 or nommx||'sse2'||
