@@ -6,8 +6,6 @@
 #ifndef __FUNCTORS_H__
 #define __FUNCTORS_H__
 
-#include <function.h>
-
 #include "../util/rs_container.h"
 #include "../xasmlib/xasmlib.h"
 
@@ -22,7 +20,7 @@ namespace functors {
  * </summary>
  */
 template<class val>
-struct count : public fcpp::Fun2Impl<size_t, val, size_t> {
+struct count {
 	typedef size_t result;
 
     size_t operator() (const size_t & count, const val &) const {
