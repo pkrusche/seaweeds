@@ -6,7 +6,7 @@
 #ifndef __ASM_UTILS_H__
 #define __ASM_UTILS_H__
 
-#include "pk_config.h"
+#include "autoconfig.h"
 
 namespace utilities {
 

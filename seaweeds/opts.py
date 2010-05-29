@@ -1,12 +1,8 @@
-mode='debug'
-#toolset = 'gcc'
-#gcc_stlfilt = 'gfilt'
 cl_stlfilt = '"C:\\Documents and Settings\\peter\\STLFilt\\MFilt.bat"'
 win32_boostdir = 'g:\\Boost\\include';
 win32_lokidir = 'g:\\Boost\\loki';
 win32_tbbdir = 'g:\\tbb';
 win32_bsponmpidir = 'C:\\Documents and Settings\\peter\\workspace\\bsponmpi'
-QTDIR = 'G:\\Qt\\qt-win-opensource-src-4.4.3';
 BRCCFLAGS = " -p cpu ";
 use_ati_brook = 0;
 BROOKROOT='C:\\Program Files\\ATI\\ATI Brook+ 1.4.0_beta'

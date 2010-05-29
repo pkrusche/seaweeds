@@ -3,7 +3,7 @@
  *   peter@dcs.warwick.ac.uk                                               *
  ***************************************************************************/
 
-#include "../../autoconfig.h"
+#include "autoconfig.h"
 
 #include <iostream>
 #include <limits>

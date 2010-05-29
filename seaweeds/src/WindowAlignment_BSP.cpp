@@ -8,7 +8,7 @@
 //#define  _VERBOSETEST_WINDOWLCS_CIPR
 
 #include "bspcpp/bsp_cpp.h"
-#include "pk_config.h"
+#include "autoconfig.h"
 
 #include <fstream>
 #include <string>

@@ -9,7 +9,7 @@
 #include <vector>
 #include <map>
 
-#include "../pk_config.h"
+#include "../autoconfig.h"
 
 #include "xasmlib/functors.h"
 #include "rangesearching/RangeBenchmark2D.h"

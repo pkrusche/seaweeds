@@ -138,8 +138,8 @@ print "Compiling on platform "+ platform + " using mode " + mode + " and compile
 
 root.Append(
     CCFLAGS = ' $CFLAGS',
-    CPPPATH = ['#src', '#libs/FC++.1.5','#libs/pthreads_win32/include'],
-    LIBPATH = ['#libs','#libs/pthreads_win32/lib'],
+    CPPPATH = ['#src' ],
+    LIBPATH = ['#libs' ],
 )
 
 if platform == 'win32':
@@ -472,7 +472,7 @@ typedef boost::uint16_t WORD;
 
 """	
 	conf = Configure(root, custom_tests = {'CheckLoki' : CheckLoki, 'CheckSpawnp' : CheckSpawnp})
-	autohdr = open("autoconfig.h", 'w')
+	autohdr = open("src/autoconfig.h", 'w')
 	autohdr.write(autoconfig_h_begin);
 
 	if subarch == 'x86_64' or subarch == 'AMD64':
@@ -489,6 +489,8 @@ typedef boost::uint16_t WORD;
 	
 	if use_ati:
 		autohdr.write("#define _HAVE_ATI_GPU \n")	
+
+	autohdr.write("#define MEMCPY memcpy \n")	
 
 	if not conf.CheckLoki():
 		print 'You need the Loki C++ library.'
