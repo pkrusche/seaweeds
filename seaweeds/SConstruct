@@ -57,7 +57,6 @@ opts.AddVariables(
     ('win32_ccpdir', 'Path to Microsoft Compute Cluster Pack in Win32', 'C:\\Program Files\\Microsoft Compute Cluster Pack'),
     ('win32_tbbdir', 'Path to tbb library in Win32', 'C:\\tbb'),
     ('win32_bsponmpidir', 'Path to tbb library in Win32', 'C:\\bsponmpi'),
-    ('win32_bsp_cppdir', 'Path to tbb library in ', '..\\bsp_cpp'),
     ('BROOKROOT', 'Path to ATI Stream SDK', ''),
     ('QTDIR', 'Path to QT library in Win32', 'C:\\Qt'),
 	('toolset', 'Specify compiler and linker tools: gcc|default', 'default'),
@@ -133,7 +132,6 @@ win32_lokidir = root['win32_lokidir']
 win32_tbbdir = root['win32_tbbdir']
 win32_ccpdir = root['win32_ccpdir']
 win32_bsponmpidir = root['win32_bsponmpidir']
-win32_bsp_cppdir = root['win32_bsp_cppdir']
 
 cxx = str(root['CXX'])
 print "Compiling on platform "+ platform + " using mode " + mode + " and compiler " + cxx + "."
@@ -208,12 +206,6 @@ if platform == 'win32':
     root.Append(
         CPPPATH = [ win32_bsponmpidir +'\\include' ],
         LIBPATH = [ win32_bsponmpidir +'\\lib' ],
-    )
-    
-    # see if we can find bsp_cpp
-    root.Append(
-        CPPPATH = [ win32_bsp_cppdir +'\\include' ],
-        LIBPATH = [ win32_bsp_cppdir +'\\lib' ],
     )
 else:
 		# Unix-like stuff
@@ -388,6 +380,30 @@ if int(root['tuning']):
 # Automatic configuration code
 ###############################################################################
 
+spawnp_test_cpp = """
+
+#include <spawn.h>
+
+#define P_WAIT 0
+
+extern char **environ;
+
+int main(int argc, char** argv) {
+	__pid_t temp;
+
+	posix_spawnp(&temp, "ls", NULL, NULL, NULL, environ));
+	waitpid(temp, NULL, 0);
+	return 0;
+}
+
+"""
+
+def CheckSpawnp(context):
+    context.Message('Checking if system supports posix spawn...')
+    result = context.TryLink(spawnp_test_cpp, '.cpp')
+    context.Result(result)
+    return result
+
 loki_test_cpp = """
 
 #include <loki/SmartPtr.h>
@@ -416,6 +432,38 @@ if root['configure'] != 0:
 #ifndef __AUTOCONFIG_H__
 #define __AUTOCONFIG_H__
 
+#ifdef _MSC_VER
+// Turn off global optimizations in MSVC, they FUCK THINGS UP!
+#pragma optimize("g",off)
+
+#else
+#define __cdecl
+#endif
+
+#ifndef _WIN32
+#include <typeinfo>
+
+#include <boost/cstdint.hpp>
+
+typedef boost::int32_t INT32;
+typedef boost::uint32_t UINT32;
+typedef boost::int64_t INT64;
+typedef boost::uint64_t UINT64;
+
+typedef boost::uint8_t BYTE;
+typedef boost::uint32_t DWORD;
+typedef boost::uint16_t WORD;
+#else
+#include <Windows.h>
+#endif
+
+#ifdef _DEBUG
+#include <assert.h>
+#define ASSERT assert
+#else
+#define ASSERT(x)
+#endif
+
 """
 	
 	autoconfig_h_end = """
@@ -423,7 +471,7 @@ if root['configure'] != 0:
 #endif /* __AUTOCONFIG_H__ */
 
 """	
-	conf = Configure(root, custom_tests = {'CheckLoki' : CheckLoki})
+	conf = Configure(root, custom_tests = {'CheckLoki' : CheckLoki, 'CheckSpawnp' : CheckSpawnp})
 	autohdr = open("autoconfig.h", 'w')
 	autohdr.write(autoconfig_h_begin);
 
@@ -435,6 +483,9 @@ if root['configure'] != 0:
 
 	if root['simd_mode'] == 'sse2':
 		autohdr.write("#define _HAVE_SSE2 \n")
+
+	if conf.CheckSpawnp():
+		autohdr.write("#define _POSIX_SPAWNP \n")
 	
 	if use_ati:
 		autohdr.write("#define _HAVE_ATI_GPU \n")	
@@ -442,15 +493,22 @@ if root['configure'] != 0:
 	if not conf.CheckLoki():
 		print 'You need the Loki C++ library.'
 		
-#	if platform == 'win32':
-#		autohdr.write('#pragma optimize("g", off) // disable global optimization\n')
-
 	autohdr.write(autoconfig_h_end)
 	root = conf.Finish()
 	autohdr.close()
 
 if int(root['tuning']):
 	arch_id = arch_id + "_tuned"
+
+###############################################################################
+# Setup library suffix
+###############################################################################
+
+libsuffix = ''
+if sequential == 1:
+	libsuffix += 'sequential'
+if mode == 'debug':
+	libsuffix += '_debug'
 
 ###############################################################################
 # The library of assembler optimized integer operations
@@ -467,8 +525,16 @@ else:
 	print "using assembler code for " + subarch
 	xasmlib_files = ['src/xasmlib/machineword_x86.asm', 'src/xasmlib/machineword_x86_'+vec_machineword_asm_suffix+'.asm', 'src/xasmlib/xasmlib.c']
 	
-xasmlib = root.Library('libs/xasmlib', xasmlib_files)
+xasmlib = root.Library('lib/xasmlib'+libsuffix, xasmlib_files)
 root.Append(LIBS = xasmlib)
+
+###############################################################################
+# BSP C++ utility library
+###############################################################################
+
+bspcpplib_files = ['src/bspcpp/timing.cpp', 'src/bspcpp/ParameterFile.cpp', 'src/bspcpp/CommandLine.cpp', 'src/bspcpp/singletons.cpp']
+bspcpplib = root.Library('lib/bspcpp'+libsuffix, bspcpplib_files)
+root.Append(LIBS = bspcpplib)
 
 ###############################################################################
 # ATI GPU accellerated code
@@ -485,34 +551,23 @@ if use_ati:
 		'src/gpulib/seaweeds.cpp',
 		root.BrCC('src/gpulib/seaweeds_gpu.br'), 
 	]
-	gpulib = root.Library('libs/gpulib', gpulib_files);
+	gpulib = root.Library('lib/gpulib'+libsuffix, gpulib_files);
 	root.Append(LIBS = gpulib)
 
 ###############################################################################
 # Setup MPI capable environment
 ###############################################################################
 
-
-libsuffix = ''
-if sequential == 1:
-	libsuffix += 'sequential'
-if mode == 'debug':
-	libsuffix += '_debug'
-
 mpi = root.Clone()
 
 if sequential:
 	root.Append(LIBS = [
-		"bspcpp"+libsuffix,
 		"bsponmpi"+libsuffix]
 		)
 else:
 	root.Append(LIBS = [
-		"bspcppsequential"+libsuffix,
 		"bsponmpisequential"+libsuffix]
 		)
-
-mpi.Append(LIBS = ["bspcpp"+libsuffix])
 
 if not sequential:
 	if platform == 'win32':
@@ -557,27 +612,10 @@ nontuned.Program('bin/rangetuning', rangetuning_objects)
 #	])
 
 ###############################################################################
-# Setup Cilk++ capable environment
-###############################################################################
-
-cilk = root.Clone()
-
-cilk.Tool('cilk')
-if platform == 'Windows':	# MSVC version
-	cilkname = "cilkpp"
-else: # GCC version
-	cilkname = "cilk++"
-
-cilk.Replace(
-	CXX = cilkname,
-	LINK = cilkname,
-)
-
-###############################################################################
 # Export our build environments for the SConscripts
 ###############################################################################
 
-Export(['root', 'mpi', 'cilk', 'mode', 'arch_id'])
+Export(['root', 'mpi', 'mode', 'arch_id'])
 
 ###############################################################################
 # get SConscripts
@@ -585,8 +623,3 @@ Export(['root', 'mpi', 'cilk', 'mode', 'arch_id'])
 
 SConscript('src/SConscript')
 SConscript('src/tests/SConscript')
-#SConscript('benchmark/SConscript')
-
-if int(root['docs']):
-	SConscript('docs/SConscript')
-
