@@ -124,5 +124,4 @@ All required libraries (boost, TBB and loki) have been installed into ~/lib and 
 ||win32_tbbdir||Path to TBB library in Win32||'C:\\tbb'||
 ||win32_bsponmpidir||Path to bsponmpi library in Win32||'C:\\bsponmpi'||
 ||sequential||Use sequential version of the bsponmpi library||0||
-||toolset||Specify compiler and linker tools: gcc|icc|default||'default'||
 ||simd_mode||Specify which SIMD instructions to use: mmx, sse2 or nommx||'sse2'||
