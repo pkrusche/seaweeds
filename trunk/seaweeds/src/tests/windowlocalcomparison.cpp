@@ -5,7 +5,7 @@
 
 #define _VERBOSETEST
 
-#include "../pk_config.h"
+#include "../autoconfig.h"
 
 #include <iostream>
 #include <loki/Typelist.h>

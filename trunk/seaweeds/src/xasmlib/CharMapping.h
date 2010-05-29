@@ -5,7 +5,7 @@
 #ifndef __CHARMAPPING_H__
 #define __CHARMAPPING_H__
 
-#include "config.h"
+#include "autoconfig.h"
 
 #include <vector>
 

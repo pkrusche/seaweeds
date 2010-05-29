@@ -15,7 +15,7 @@
 
 #include "bspcpp/CommandLine.h"
 
-#include "../../autoconfig.h"
+#include "autoconfig.h"
 
 namespace utilities {
 

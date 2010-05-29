@@ -13,7 +13,7 @@
 //#define _DEBUG_SEAWEEDS
 #define _SEAWEEDS_VERIFY
 
-#include "../pk_config.h"
+#include "../autoconfig.h"
 #include <iostream>
 #include <loki/Typelist.h>
 

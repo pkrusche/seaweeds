@@ -7,7 +7,7 @@
 //#define _VERBOSETEST
 //#define _DEBUG_SEAWEEDS
 
-#include "pk_config.h"
+#include "autoconfig.h"
 
 #include <iostream>
 
