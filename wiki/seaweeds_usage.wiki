@@ -33,7 +33,7 @@ $ ./WindowAlignment [firstsequencefile] [secondsequencefile] \
          {options} 
 }}}
 
-*WindowAlignment command line options*
+*Windowalignment command line options*
 
 ||*Option*||*Explanation*||
 || -c || enable checkpointing (resuming if checkpoint file exists for the job)||
