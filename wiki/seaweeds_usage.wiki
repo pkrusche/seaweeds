@@ -4,7 +4,7 @@ The main part of the seaweed code consists of various implementations of alignme
 =The alignment plot tools=
 The three main executables for computing alignment plots are _WindowAlignment_ and _PostProcessWindows_.
 
- ==WindowAlignment==
+==WindowAlignment==
 This program takes two sequence files as its input, the first sequence file must contain the parameters for the comparison, which are the first and second step sizes (only window pairs with starting positions aligning at these step sizes are compared), the window length, and the minimum alignment score threshold.
 
 The following example shows such a first input sequence file. In this file, the first step size is 5, the second step size is~1, and the window length is~100.
