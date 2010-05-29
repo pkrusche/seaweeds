@@ -1,7 +1,5 @@
 = C++ Code for Seaweed Algorithms -- Compiling Instructions =
 
-This is the documentation for the seaweed code in the seaweeds_cpp code branch of this repository.
-
 == Prerequisites == 
 
 The seaweed code can be compiled using a recent version of gcc (>4.0.0 on Linux and MacOS) or MSVC (Windows, 2005 or 2008). Intel C++ should work as well. 
