@@ -6,7 +6,7 @@
 #ifndef __RANGE2D_H__
 #define __RANGE2D_H__
 
-#include "config.h"
+#include "autoconfig.h"
 
 #include <iostream>
 #include <math.h>
