@@ -10,8 +10,8 @@ Collection of slides on seaweed-related talks: [wiki:talks]
 
 Documentation of Seaweed Code: 
 
- * Compiling: [wiki:seaweeds_cpp]
- * Usage: [wiki:seaweeds_cpp_usage]
- * Download Binaries: [wiki:seaweeds_binaries]
+ * Compiling: seaweeds_cpp
+ * Usage: seaweeds_cpp_usage
+ * Download Binaries: seaweeds_binaries
 
-Benchmark results: [wiki:seaweeds_performance]
+Benchmark results: seaweeds_performance
