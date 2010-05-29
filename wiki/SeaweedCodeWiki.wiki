@@ -1,0 +1,17 @@
+= Seaweeds: Parallel Sequence Alignment Tools =
+
+This is the starting page for the seaweed-based sequence alignment tools. There is not much here yet.
+
+Seaweed code download:
+
+[http://code.google.com/p/seaweeds/source/checkout]
+
+Collection of slides on seaweed-related talks: [wiki:talks]
+
+Documentation of Seaweed Code: 
+
+ * Compiling: [wiki:seaweeds_cpp]
+ * Usage: [wiki:seaweeds_cpp_usage]
+ * Download Binaries: [wiki:seaweeds_binaries]
+
+Benchmark results: [wiki:seaweeds_performance]
