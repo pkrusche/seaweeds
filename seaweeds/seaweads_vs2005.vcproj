@@ -68,7 +68,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\util\aligned_allocator.h"
+				RelativePath=".\src\bspcpp\tools\aligned_allocator.h"
 				>
 			</File>
 			<File
@@ -80,11 +80,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\autoconfig.h"
+				RelativePath=".\src\autoconfig.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\Avector.h"
+				RelativePath=".\src\bspcpp\Avector.h"
 				>
 			</File>
 			<File
@@ -96,15 +96,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\bsp_cpp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\util\bsp_cpp_mpi.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\util\bsp_cpp_seq.h"
+				RelativePath=".\src\bspcpp\bsp_cpp.h"
 				>
 			</File>
 			<File
@@ -116,7 +108,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\CommandLine.h"
+				RelativePath=".\src\bspcpp\CommandLine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\bspcpp\Computation.h"
 				>
 			</File>
 			<File
@@ -200,19 +196,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\ParameterFile.h"
+				RelativePath=".\src\bspcpp\ParameterFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\Permutation.h"
+				RelativePath=".\src\bspcpp\Permutation.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\matrix\PermutationMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\pk_config.h"
 				>
 			</File>
 			<File
@@ -225,6 +217,10 @@
 			</File>
 			<File
 				RelativePath=".\libs\fc++.1.5\prelude.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\bspcpp\ProcMapper.h"
 				>
 			</File>
 			<File
@@ -288,11 +284,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\ScoreMatrix.h"
+				RelativePath=".\src\windowlocal\scorematrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\scorematrix.h"
+				RelativePath=".\src\seaweeds\ScoreMatrix.h"
 				>
 			</File>
 			<File
@@ -316,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\bspcpp\tools\singletons.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\seaweeds\sm_ExplicitStorage.h"
 				>
 			</File>
@@ -328,11 +328,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\spawn.h"
+				RelativePath=".\src\bspcpp\tools\spawn.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\windowwindow\splitwindowwindowlcs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\bspcpp\Superstep.h"
 				>
 			</File>
 			<File
@@ -356,7 +360,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\utilities.h"
+				RelativePath=".\src\bspcpp\tools\utilities.h"
 				>
 			</File>
 			<File
@@ -397,10 +401,6 @@
 			</File>
 			<File
 				RelativePath=".\libs\include\cleanup.c"
-				>
-			</File>
-			<File
-				RelativePath=".\src\util\CommandLine.cpp"
 				>
 			</File>
 			<File
@@ -497,10 +497,6 @@
 			</File>
 			<File
 				RelativePath=".\libs\include\nonportable.c"
-				>
-			</File>
-			<File
-				RelativePath=".\src\util\ParameterFile.cpp"
 				>
 			</File>
 			<File
@@ -1064,6 +1060,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\bspcpp\singletons.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\libs\include\spin.c"
 				>
 			</File>
@@ -1072,7 +1072,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\util\timing.cpp"
+				RelativePath=".\src\bspcpp\timing.cpp"
 				>
 			</File>
 			<File
@@ -1089,14 +1089,6 @@
 			</File>
 			<File
 				RelativePath=".\src\cilk\WindowAlignment.cilk"
-				>
-			</File>
-			<File
-				RelativePath=".\src\WindowAlignment.cilk"
-				>
-			</File>
-			<File
-				RelativePath=".\src\WindowAlignment.cpp"
 				>
 			</File>
 			<File
@@ -1137,10 +1129,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Doxyfile"
-			>
-		</File>
-		<File
 			RelativePath=".\Makefile"
 			>
 		</File>
@@ -1149,31 +1137,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\opts_allain.csc.warwick.ac.uk_Linux_x86_64.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_fe1_Linux_x86_64.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_godzilla.csc.warwick.ac.uk_Linux_x86_64.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_grub.csc.warwick.ac.uk_Linux_x86_64.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_settembrini_Windows_.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_starcursed.csc.warwick.ac.uk_Linux_x86_64.py"
-			>
-		</File>
-		<File
-			RelativePath=".\opts_wsbc.cov.warwick.ac.uk_Darwin_i386.py"
+			RelativePath=".\src\SConscript"
 			>
 		</File>
 		<File
