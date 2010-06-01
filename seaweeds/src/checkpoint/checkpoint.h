@@ -98,7 +98,7 @@ public:
 
 		  checkpointFile.write(filename.c_str(), storage_type);
 		  lastCheckpoint = utilities::time();
-		  std::cerr << "Checkpoint t = " << lastCheckpoint << std::endl;
+		  std::cout << "Checkpoint t = " << lastCheckpoint << std::endl;
 	  }
 
 	  /**
@@ -118,7 +118,7 @@ public:
 				  checkpointFile.write(filename.c_str(), storage_type);
 			  }
 			  lastCheckpoint = utilities::time();
-			  std::cerr << "Checkpoint t = " << lastCheckpoint << std::endl;
+			  std::cout << "Checkpoint t = " << lastCheckpoint << std::endl;
 		  }
 	  }
 

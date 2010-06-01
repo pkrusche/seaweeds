@@ -91,6 +91,16 @@ public:
 	static size_t translatecoord_bk(size_t coord) {
 		return coord/cellsize;
 	}
+
+
+	/**
+	 * \brief check if coordinate translates to a valid or a fractional position in the original string
+	 * \param coord 
+	 * \return 
+	*/
+	static bool validcoord(size_t coord) {
+		return coord % cellsize == 0;
+	}
 };
 
 };

@@ -79,6 +79,13 @@ namespace windowlocal {
 		virtual void operator() (window<> const & win2) {
 			using namespace std;
 			window<> win = win2;
+			if(!( // check if this score is reported for a real position, or if it is for a fractional 
+				// position (within a supercell)
+				lcs::ScoreTranslation<string>::validcoord(win.x0) && lcs::ScoreTranslation<string>::validcoord(win.x1)
+				) 
+				) {
+					return;
+			}
 			win.x0 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x0);
 			win.x1 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x1);
 			win.score = lcs::ScoreTranslation<string>::translatescore(m, n, win.score);
@@ -131,6 +138,13 @@ namespace windowlocal {
 		virtual void operator() (window<> const & win2) {
 			using namespace std;
 			window<> win = win2;
+			if(!( // check if this score is reported for a real position, or if it is for a fractional 
+				  // position (within a supercell)
+				lcs::ScoreTranslation<string>::validcoord(win.x0) && lcs::ScoreTranslation<string>::validcoord(win.x1)
+				) 
+				) {
+				return;
+			}
 			win.x0 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x0);
 			win.x1 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x1);
 			win.score = lcs::ScoreTranslation<string>::translatescore( translate_and_print<string> ::m,  translate_and_print<string> ::n, win.score);

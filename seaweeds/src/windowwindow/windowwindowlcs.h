@@ -43,11 +43,11 @@ public:
 		double dtl = 0;
 
 		if(s_p0 > 0) {
-			std::cerr << "[resume] starting at position " << s_p0/step1 << std::endl;
+			std::cout << "[resume] starting at position " << s_p0/step1 << std::endl;
 		}
 
 		windowlocal::reportscore<_report, double> _rpt(reporter, (int)s_p0);
-		for(UINT64 p0 = s_p0; p0 < m-windowlength; p0+= step1) {
+		for(UINT64 p0 = s_p0; p0 <= m-windowlength; p0+= step1) {
 			string sub1 = p_s1->substr((size_t) p0, windowlength);
 			stripmatcher _sm (windowlength, sub1);
 			_rpt.p0 = (int) p0;
@@ -63,8 +63,8 @@ public:
 			double dt = utilities::time() - t0;
 			
 			if(dt - dtl > 5) {
-				std::cerr << "Completed [" << p0/step1 << "/"<< (m-windowlength)/step1 << "], time remaining " 
-					<< dt/(p0+1)*(m-windowlength) - dt  << "s" << std::endl;
+				std::cout << "Completed [" << p0/step1 << "/"<< (m-windowlength+1)/step1 << "], time remaining " 
+					<< dt/(p0+1)*(m-windowlength+1) - dt  << "s" << std::endl;
 				dtl = dt;
 			}
 		}
