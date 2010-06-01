@@ -49,7 +49,7 @@
 				BuildCommandLine="scons -Q -u mode=release "
 				ReBuildCommandLine="scons -Q -u -c mode=release &amp;&amp; scons -Q -u mode=release"
 				CleanCommandLine=""
-				Output="bin\mwwtesting_win32_default_release.exe"
+				Output="bin\windowalignment_win32_default_release.exe"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				IncludeSearchPath="&quot;libs\FC++.1.5&quot;;src;libs\pthreads_win32;G:\tbb\include;&quot;G:\Boost\include\boost-1_33_1&quot;;G:\Boost\loki\include;&quot;C:\Program Files\Microsoft Compute Cluster Pack\Include&quot;"
 				ForcedIncludes=""
@@ -1121,6 +1121,14 @@
 			</File>
 			<File
 				RelativePath=".\My Amplifier Results\r002hs\r002hs.ampl"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="My Inspector Results"
+			>
+			<File
+				RelativePath=".\My Inspector Results\r000mi2\r000mi2.insp"
 				>
 			</File>
 		</Filter>

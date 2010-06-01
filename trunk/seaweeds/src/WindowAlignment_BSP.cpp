@@ -104,7 +104,7 @@ BSP_SUPERSTEP_DEF_BEGIN(ComputeAlignments, context, bsp::ProcMapper)
 			 << " starting at block " << node * g_block_size_per_proc 
 			  << " (char " << context.data_offset << ")/" 
 			 << g_block_size <<
-			", will process " << (context.data_size-g_windowlength) / g_firststepwidth
+			", will process " << (context.data_size-g_windowlength+1) / g_firststepwidth
 			<< " blocks (" << context.data_size << " chars)" << endl;
 		cout << flush;
 	}
@@ -127,8 +127,9 @@ BSP_SUPERSTEP_DEF_BEGIN(ComputeAlignments, context, bsp::ProcMapper)
 
 	// write a profile
 	bsp_global_put(	context.my_apc.get_profile_a(), 
-		g_profile_a, sizeof(double) * bsp_pid() * g_profile_size_per_proc, 
-		sizeof(double)*context.my_apc.get_profile_size_a());
+		g_profile_a, 
+		sizeof(double) * bsp_pid() * g_profile_size_per_proc, 
+		sizeof(double) * context.my_apc.get_profile_size_a());
 
 	// write b profile
 	bsp_global_put(	context.my_apc.get_profile_b(), 
@@ -192,7 +193,7 @@ void spmd_computation() {
 	g_block_size = (g_a_size - g_windowlength + g_firststepwidth - 1) / g_firststepwidth;
 	g_block_size_per_proc = (g_block_size + processors - 1 ) / processors;
 	g_data_size_per_proc   = g_block_size_per_proc * g_firststepwidth + g_windowlength;
-	g_profile_size_per_proc = ICD(g_data_size_per_proc - g_windowlength + 1, g_firststepwidth);
+	g_profile_size_per_proc = ICD(g_data_size_per_proc - g_windowlength + 2, g_firststepwidth);
 
 	// allocate global array for the profiles
 	g_profile_a = bsp_global_alloc(sizeof(double) * g_profile_size_per_proc * processors);
@@ -239,10 +240,10 @@ void spmd_computation() {
 		cout << "Profiles written to " << profilefile1 << " and " << profilefile2 << endl;
 		ofstream f1(profilefile1.c_str(), ios::out);
 		ofstream f2(profilefile2.c_str(), ios::out);
-		
+	
 		for (size_t l = 0; l < g_apc.get_profile_size_a(); ++l) {
-			size_t proc = l / g_block_size_per_proc;
-			size_t offset = l % g_block_size_per_proc;
+			size_t proc = min ((size_t)processors-1, l / g_block_size_per_proc);
+			size_t offset = min (g_profile_size_per_proc, l - proc*g_block_size_per_proc);
 			f1 << profile_a[proc * g_profile_size_per_proc + offset] << endl;
 		}
 
