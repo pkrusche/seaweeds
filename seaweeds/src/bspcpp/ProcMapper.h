@@ -7,10 +7,10 @@
 
 #include <algorithm>
 #include <tbb/concurrent_vector.h>
-#include <loki/NullType.h>
 
 #include "bsp.h"
 #include "tools/utilities.h"
+#include "util/TypeList.h"
 
 namespace bsp {
 	/**

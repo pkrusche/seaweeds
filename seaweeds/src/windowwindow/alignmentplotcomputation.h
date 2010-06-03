@@ -73,6 +73,8 @@ namespace windowlocal {
 			string legalchars_b;
 			int threads;
 			int overlap;
+			int max_windowpairs;
+
 
 			po::positional_options_description posopts; 
 			posopts.add("first-sequence", 1);
@@ -109,6 +111,9 @@ namespace windowlocal {
 					"enable checkpointing (resuming if checkpoint file exists for the job")
 				(	"full-output,F", 
 					"output all relevant window matches (output can become very large!)")
+				(	"max-windowpairs,M", 
+					po::value<int> (&max_windowpairs)->default_value(-1), 
+					"specify the maximum number of windows that are reported.")
 				(	"method,m", 
 					po::value< string >(&method_s)->default_value("seaweeds"), 
 					"choose method to use: [lcs|blcs|seaweeds|scores|scoresoverlap]" )
@@ -203,6 +208,7 @@ namespace windowlocal {
 			pf.set("profile1", profile1);
 			pf.set("profile2", profile2);
 			pf.set("threads", threads);
+			pf.set("max_windowpairs", max_windowpairs);
 
 			return true;
 		}
@@ -408,12 +414,14 @@ namespace windowlocal {
 			int firststepwidth = 1;
 			int secondstepwidth = 1;
 			int full_output = 0;
+			int max_windowpairs = -1;
 
 			pf.get("firststepwidth", firststepwidth , firststepwidth );
 			pf.get("secondstepwidth", secondstepwidth , secondstepwidth );
 			pf.get("cutoffthreshold", cutoffthreshold, cutoffthreshold);
 			pf.get("windowlength", winlen, winlen);
 			pf.get("full-output", full_output, full_output);
+			pf.get("max_windowpairs", max_windowpairs, max_windowpairs);
 
 			if(full_output) {
 				tp = new translate_and_print<string>(*output, winlen, winlen, cutoffthreshold, 
@@ -421,8 +429,17 @@ namespace windowlocal {
 					get_profile_size_b(), 
 					firststepwidth, secondstepwidth);
 			} else {
+				// This is the formula from the original window alignment code.
+				// We return at least 3000 window pairs, and we expect an additional
+				// 0.4 window pairs per base. We use the average length of string 
+				// a and string b as the number of bases.
+				size_t buffersize = 3000 + 0.2 * (get_real_a_len() + get_real_b_len());
+				if (max_windowpairs > 0) {
+					buffersize = max_windowpairs;
+				}
+				cout << "Window buffer size is " << buffersize << endl;
 				tp = new translate_and_print_with_buffer<string>(*output, 
-					10000,
+					buffersize,
 					winlen, winlen, cutoffthreshold, 
 					get_profile_size_a(), 
 					get_profile_size_b(), 

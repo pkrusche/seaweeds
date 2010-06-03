@@ -6,8 +6,8 @@
 #include "autoconfig.h"
 
 #include <iostream>
-#include <loki/Typelist.h>
 
+#include "util/TypeList.h"
 #include "bspcpp/tools/utilities.h"
 
 #include "../xasmlib/xasmlib.h"
@@ -79,7 +79,7 @@ typedef tuning::Timing < LCSTest< 8 >, size_t > LCSTest8;
 typedef tuning::Timing < LCSTest< 15 >, size_t > LCSTest15;
 typedef tuning::Timing < LCSTest< 16 >, size_t > LCSTest16;
 
-typedef LOKI_TYPELIST_6(
+typedef TYPELIST_6(
 	LCSTest2,
 	LCSTest3,
 	LCSTest5,

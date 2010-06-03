@@ -7,8 +7,8 @@
 #define __WINDOWLOCAL_SEAWEEDS_H__
 
 #include <string>
-#include <loki/TypeManip.h>
 
+#include "util/TypeList.h"
 #include "lcs/Llcs.h"
 #include "xasmlib/IntegerVector.h"
 #include "xasmlib/Queue.h"
@@ -45,12 +45,12 @@ public:
 		}
 	};
 
-	typedef typename Loki::Select<64%_omega == 0,
+	typedef typename utilities::Select<64%_omega == 0,
 		EndOfStripShiftMM,
 		EndOfStripShiftDefault>::Result EndOfStripShift_t;
 	EndOfStripShift_t EndOfStripShift;
 
-	typedef typename Loki::Select<_bpc == _omega,
+	typedef typename utilities::Select<_bpc == _omega,
 		CopyInitializer,
 		ResizeInitializer>::Result Initializer;
 

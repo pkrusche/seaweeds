@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <loki/Typelist.h>
+#include <util/TypeList.h>
 
 #include "autoconfig.h"
 

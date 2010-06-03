@@ -11,9 +11,7 @@
 #include <list>
 #include <map>
 
-#include <loki/Typelist.h>
-#include <loki/NullType.h>
-
+#include "util/TypeList.h"
 #include "bspcpp/tools/utilities.h"
 
 namespace tuning {
@@ -65,7 +63,7 @@ public:
 template <class _parameter, class _tlist> class MultiTiming;
 
 template <typename _parameter, class _head, class _tail>
-class MultiTiming <_parameter, Loki::Typelist<_head, _tail> >  {
+class MultiTiming <_parameter, utilities::Typelist<_head, _tail> >  {
 public:
     static void getTimings (int add, int NUM, int inc, TimingList & timings, _parameter p) {
         _head t;
@@ -77,7 +75,7 @@ public:
 };
 
 template <typename _parameter, class _head>
-class MultiTiming <_parameter, Loki::Typelist<_head, Loki::NullType> >  {
+class MultiTiming <_parameter, utilities::Typelist<_head, utilities::NullType> >  {
 public:
     static void getTimings (int add, int NUM, int inc, TimingList & timings, _parameter p) {
         _head t;

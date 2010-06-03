@@ -8,7 +8,6 @@
 #include "autoconfig.h"
 
 #include <iostream>
-#include <loki/Typelist.h>
 
 #include "bspcpp/tools/utilities.h"
 #include "xasmlib/IntegerVector.h"

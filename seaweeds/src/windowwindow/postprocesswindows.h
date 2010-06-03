@@ -55,15 +55,22 @@ inline void postprocess(int argc, const char ** argv) {
 
 	int files_read = 0;
 	int max_windows = 10000;
+	int th = 0;
 
 	CommandLine cmd(argc, argv);
 	cmd.getValue("m", max_windows);
+	
 	map<string, _window> windows;
 	double threshold = 0;
+	cmd.getValue("t", th);
+
+	threshold = th;
 	int win_x_min= 0;
 	int win_x_max= 0;
 	int win_y_min= 0;
 	int win_y_max= 0;
+
+	cout << "Starting threshold: " << threshold << endl;
 
 	for(int file = 1; file < argc; ++file) {
 		ifstream in(argv[file]);
@@ -77,7 +84,9 @@ inline void postprocess(int argc, const char ** argv) {
 		}
 
 		string line = getline(in);
-		threshold = atoi(line.c_str());
+		if(threshold <= 0) {
+			threshold = atoi(line.c_str());
+		}
 		int lines  = 0;
 		while(!in.eof()) {
 			line = getline(in);
@@ -106,7 +115,7 @@ inline void postprocess(int argc, const char ** argv) {
 
 			if(wl.score >= threshold) {
 				windows[wl.val] = wl;
-			}
+			} 
 
 			while(windows.size() > (unsigned) max_windows) {
 				threshold+= 1;

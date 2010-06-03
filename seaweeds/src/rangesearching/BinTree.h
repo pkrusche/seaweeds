@@ -6,13 +6,11 @@
 #ifndef __BINTREE_H__
 #define __BINTREE_H__
 
-#include <loki/TypeManip.h>
-#include <loki/NullType.h>
-
 #include "bspcpp/Permutation.h"
 #include "bspcpp/tools/utilities.h"
 
 #include "util/rs_container.h"
+#include "util/TypeList.h"
 #include "IRange.h"
 
 namespace rangesearching {
@@ -28,7 +26,7 @@ template <
 	class _comparison_fun,
 	class _add_fun,
 	bool copy = false,
-	class _nesting = Loki::NullType
+	class _nesting = utilities::NullType
 > class BinTree : public IRange<_value_type, 
 								rs_container<_value_type>,
 								_comparison_fun, 
@@ -123,10 +121,10 @@ public:
 		}
 	};
 
-	typedef typename Loki::Select<
-		Loki::IsSameType<_nesting, Loki::NullType>::value,
-		typename Loki::Select<		
-			Loki::IsSameType<_add_fun, typename functors::count<_value_type> >::value,
+	typedef typename utilities::Select<
+		utilities::IsSameType<_nesting, utilities::NullType>::value,
+		typename utilities::Select<		
+			utilities::IsSameType<_add_fun, typename functors::count<_value_type> >::value,
 			DirectCountingQuery,
 			DirectQuery
 		>::Result,

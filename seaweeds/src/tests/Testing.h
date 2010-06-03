@@ -11,8 +11,7 @@
 #include <list>
 #include <map>
 
-#include <loki/Typelist.h>
-#include <loki/NullType.h>
+#include <util/Typelist.h>
 
 #include "bspcpp/tools/utilities.h"
 
@@ -57,7 +56,7 @@ public:
 };
 
 template <typename _result, class _parameter, class _head, class _tail>
-class MultipleTests <_result, _parameter, Loki::Typelist<_head, _tail> >  {
+class MultipleTests <_result, _parameter, utilities::Typelist<_head, _tail> >  {
 public:
 	static void test (_parameter & p, std::list<_result> & r) {
         _head t;
@@ -67,7 +66,7 @@ public:
 };
 
 template <typename _result, class _parameter, class _head>
-class MultipleTests <_result, _parameter, Loki::Typelist<_head, Loki::NullType> >  {
+class MultipleTests <_result, _parameter, utilities::Typelist<_head, utilities::NullType> >  {
 public:
     static void test (_parameter & p, std::list<_result> & r) {
         _head t;
