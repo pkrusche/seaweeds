@@ -17,7 +17,7 @@ namespace bsp {
 	 * @brief Simple blocked assignment of pids to processors 
 	 */
 
-	template <class _context=Loki::NullType>
+	template <class _context=utilities::NullType>
 	class ProcMapper {
 	public:
 		ProcMapper(int _processors, int _groups = 1) : 
