@@ -5,15 +5,14 @@
 #ifndef Computation_h__
 #define Computation_h__
 
-#include <loki/Typelist.h>
-#include <loki/NullType.h>
 
+#include "util/TypeList.h"
 #include "ProcMapper.h"
 #include "Superstep.h"
 
 namespace bsp {
 	template<class _superstep_list, 
-			 class _context = Loki::NullType, 
+			 class _context = utilities::NullType, 
 			 class _procmapper = ProcMapper<_context>
 	> 
 	class FlatComputation;
@@ -23,7 +22,7 @@ namespace bsp {
 	 */
 	template<class _context, 
 			 class _procmapper> 
-	class FlatComputation<Loki::NullType, _context, _procmapper> {
+	class FlatComputation<utilities::NullType, _context, _procmapper> {
 	public:
 		typedef _procmapper procmapper_t;
 
@@ -36,7 +35,7 @@ namespace bsp {
 	 * @brief Specialisation that executes the typelist computations one by one, and sync's in between
 	 */
 	template<class H, class T, class _context, class _procmapper>
-	class FlatComputation<Loki::Typelist<H, T>, _context, _procmapper > {
+	class FlatComputation<utilities::Typelist<H, T>, _context, _procmapper > {
 	public:
 		typedef FlatComputation<T, _context, _procmapper> tail;
 		typedef _procmapper procmapper_t;

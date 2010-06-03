@@ -8,7 +8,7 @@
 
 #include <algorithm>
 #include <string>
-#include <loki/TypeManip.h>
+#include <util/TypeList.h>
 
 #include "bspcpp/tools/utilities.h"
 #include "xasmlib/IntegerVector.h"

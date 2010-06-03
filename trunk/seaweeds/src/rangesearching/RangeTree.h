@@ -6,15 +6,17 @@
 #ifndef RANGETREE_H_
 #define RANGETREE_H_
 
-#include <loki/SmartPtr.h>
 #include <algorithm>
 #include <map>
 #include <string>
+
+#include <boost/smart_ptr.hpp>
 
 #include "bspcpp/tools/utilities.h"
 #include "util/rs_container.h"
 #include "IRange.h"
 #include "BinTree.h"
+
 
 namespace rangesearching {
 
@@ -108,30 +110,30 @@ template <
 				iterator mid_it = rthis.begin() + A_size;
 				rthis.mid = *mid_it;
 
-				rthis.A = new _RangeTree(rthis.begin(), mid_it, true);
-				rthis.B = new _RangeTree(mid_it, rthis.end(), true);
+				rthis.A = boost::shared_ptr<_RangeTree>(new _RangeTree(rthis.begin(), mid_it, true));
+				rthis.B = boost::shared_ptr<_RangeTree>(new _RangeTree(mid_it, rthis.end(), true));
 			} else {
 				rthis.is_leaf = true;
 			}
-			rthis._data = new _leaf_type(rthis.begin(), rthis.end());
+			rthis._data = boost::shared_ptr<_leaf_type>(new _leaf_type(rthis.begin(), rthis.end()));
 
 		}
 	};
 
 	
-	typedef typename Loki::Select<presorting, 
+	typedef typename utilities::Select<presorting, 
 								  PresortingInitializer, 
 								  NoPresortingInitializer >::Result Initializer;
 
 	RangeTree(_container_type & container, bool presorted = false) : 
-		_base_type(container.begin(), container.end()),	A(NULL), B(NULL), _data(NULL), is_leaf(false) 
+		_base_type(container.begin(), container.end()),	/* A(NULL), B(NULL), _data(NULL), */ is_leaf(false) 
 	{
 		Initializer i;
 		i(*this, _base_type::begin(), _base_type::end(), presorted);
 	}
 
 	RangeTree(iterator _begin, iterator _end, bool presorted = false) :
-		_base_type(_begin, _end), A(NULL), B(NULL), _data(NULL), is_leaf(false)  
+		_base_type(_begin, _end), /* A(NULL), B(NULL), _data(NULL), */ is_leaf(false)  
 	{
 		Initializer i;
 		i(*this, _base_type::begin(), _base_type::end(), presorted);
@@ -170,8 +172,8 @@ template <
 	}
 	
 private:
-	Loki::SmartPtr< _RangeTree, Loki::RefCounted, Loki::AllowConversion, Loki::NoCheck > A, B; ///< the two subtrees
-	Loki::SmartPtr< _leaf_type > _data; ///< query structure for this node's data elements
+	boost::shared_ptr< _RangeTree > A, B; ///< the two subtrees
+	boost::shared_ptr< _leaf_type > _data; ///< query structure for this node's data elements
 	
 	_value_type max;
 	_value_type min;

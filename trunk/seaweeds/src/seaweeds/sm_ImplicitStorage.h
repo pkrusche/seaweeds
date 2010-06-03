@@ -6,7 +6,7 @@
 #define __SM_IMPLICITSTORAGE_H__
 
 #include <algorithm>
-#include <loki/SmartPtr.h>
+#include <boost/smart_ptr.hpp>
 
 #include "rangesearching/Range2D.h"
 #include "seaweeds/Seaweeds.h"
@@ -23,11 +23,11 @@ public:
 	typedef typename _slcsfun::string string;
 	typedef std::vector<int> archive;
 
-	ImplicitStorage (int _m, int _n) : m(_m), n(_n), seaweedpermutation(), rangetree(NULL) {
+	ImplicitStorage (int _m, int _n) : m(_m), n(_n), seaweedpermutation() /*, rangetree(NULL) */ {
 		ensure_sizes(m, n);
 	}
 
-	ImplicitStorage (int _m, int _n, archive const & a) : m(_m), n(_n), seaweedpermutation(a), rangetree(NULL) {
+	ImplicitStorage (int _m, int _n, archive const & a) : m(_m), n(_n), seaweedpermutation(a) /*, rangetree(NULL) */ {
 		ensure_sizes(m, n);
 	}
 
@@ -115,7 +115,7 @@ public:
 		m = s1.size();
 		n = s2.size();
 		ensure_sizes(m,n);
-		rangetree = NULL;
+		rangetree = boost::shared_ptr<_rangetree> ();
 
 		_slcsfun f;
 		f(s1, s2, right, top, false, false);
@@ -196,7 +196,7 @@ public:
 #endif // _DEBUG_SEAWEEDS
 				}
 
-				rangetree = NULL;
+				rangetree = boost::shared_ptr<_rangetree > ();
 				break;
 			}
 			case APPEND_TO_Y: 
@@ -260,7 +260,7 @@ public:
 #endif // _DEBUG_SEAWEEDS
 				}
 
-				rangetree = NULL;
+				rangetree = boost::shared_ptr <_rangetree> ();
 				break;
 			}
 		}
@@ -293,7 +293,7 @@ public:
 		for (j = 0; j < mm; ++j) {
 			seaweedpermutation[j] = new_nonzeros[mm -j - 1];
 		}
-		rangetree = NULL;
+		rangetree = boost::shared_ptr<_rangetree> ();
 	}
 
 	/**
@@ -308,7 +308,7 @@ public:
 				container.insert(container.end(), _point(j+1,seaweedpermutation[j]+1));
 			}
 		}
-		rangetree = new _rangetree(container);
+		rangetree = boost::shared_ptr<_rangetree> (new _rangetree(container));
 	}
 
 	archive & get_archive() {
@@ -456,7 +456,7 @@ public:
 protected:
 	string x, y;	///< the input strings that resulted in this highest-score matrix
 	int m, n; ///< The dimensions of the core.
-	Loki::SmartPtr<_rangetree> rangetree; ///< pointer to range tree. this will be built the first time the distribution function is called.
+	boost::shared_ptr<_rangetree> rangetree; ///< pointer to range tree. this will be built the first time the distribution function is called.
 
 	std::vector<int> seaweedpermutation; ///< the seaweed permutation. entry i gives the column for the nonzero in row i-m
 

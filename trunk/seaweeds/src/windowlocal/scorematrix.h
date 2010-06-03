@@ -6,8 +6,7 @@
 #ifndef __WINDOWLOCAL_SCOREMATRIX_H__
 #define __WINDOWLOCAL_SCOREMATRIX_H__
 
-#include <loki/TypeManip.h>
-
+#include "util/TypeList.h"
 #include "lcs/Llcs.h"
 #include "xasmlib/IntegerVector.h"
 

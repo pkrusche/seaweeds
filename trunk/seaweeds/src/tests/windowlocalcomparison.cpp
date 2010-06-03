@@ -8,7 +8,8 @@
 #include "../autoconfig.h"
 
 #include <iostream>
-#include <loki/Typelist.h>
+
+#include "util/TypeList.h"
 
 #include "bspcpp/tools/utilities.h"
 #include "xasmlib/IntegerVector.h"
@@ -101,7 +102,7 @@ typedef tuning::Timing <
 	BITSPERCHAR >, 
 		size_t > ScorematrixBenchmark;
 
-typedef LOKI_TYPELIST_5(LlcsBenchmark, LlcsCIPR_with_preprocessing_Benchmark, BoassonBenchmark, SeaweedBenchmark, ScorematrixBenchmark) 
+typedef TYPELIST_5(LlcsBenchmark, LlcsCIPR_with_preprocessing_Benchmark, BoassonBenchmark, SeaweedBenchmark, ScorematrixBenchmark) 
 	algorithms;
 
 int main(int argc, char *argv[]) {

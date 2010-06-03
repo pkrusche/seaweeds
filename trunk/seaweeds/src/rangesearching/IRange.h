@@ -8,7 +8,8 @@
 
 #include <iostream>
 #include <string>
-#include <loki/TypeManip.h>
+
+#include "util/TypeList.h"
 
 namespace rangesearching {
 
@@ -67,7 +68,7 @@ protected:
 	};
 
 	IRange(_iterator_type _first, _iterator_type _last) : first(_first), last (_last) {
-		typename Loki::Select<copy, CopyInitializer, LinkInitializer>::Result i;
+		typename utilities::Select<copy, CopyInitializer, LinkInitializer>::Result i;
 		i(*this, &container, first, last);
 	}
 

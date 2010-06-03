@@ -15,8 +15,8 @@
 
 #include "../autoconfig.h"
 #include <iostream>
-#include <loki/Typelist.h>
 
+#include "util/TypeList.h"
 #include "bspcpp/tools/utilities.h"
 #include "xasmlib/IntegerVector.h"
 #include "lcs/Llcs.h"
@@ -120,7 +120,7 @@ windowlocal::ScoreMatrixWindowLocalLlcs < windowlocal::report_nothing<>,
 BITSPERCHAR
 > ScorematrixTest;
 
-typedef LOKI_TYPELIST_6(LlcsTest, LlcsCIPRTest, LlcsCIPRTest2, BoassonTest, SeaweedTest, ScorematrixTest) algorithms;
+typedef TYPELIST_6(LlcsTest, LlcsCIPRTest, LlcsCIPRTest2, BoassonTest, SeaweedTest, ScorematrixTest) algorithms;
 //typedef LOKI_TYPELIST_1(ScorematrixTest) algorithms;
 
 int main(int argc, char *argv[]) {

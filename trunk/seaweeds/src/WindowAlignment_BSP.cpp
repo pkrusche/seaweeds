@@ -20,7 +20,6 @@
 #include <tbb/task_scheduler_init.h>
 #include <tbb/mutex.h>
 
-
 #include "windowwindow/alignmentplotcomputation.h"
 #include "windowwindow/postprocesswindows.h"
 
@@ -142,7 +141,7 @@ BSP_SUPERSTEP_DEF_BEGIN(ComputeAlignments, context, bsp::ProcMapper)
 BSP_SUPERSTEP_DEF_END()
 
 typedef bsp::FlatComputation<
-	LOKI_TYPELIST_2(
+	TYPELIST_2(
 		GetSubstring, 
 		ComputeAlignments
 	), context, bsp::ProcMapper<context> > parallel_apc;

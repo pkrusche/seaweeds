@@ -116,11 +116,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libs\include\config.h"
+				RelativePath=".\libs\fc++.1.5\config.h"
 				>
 			</File>
 			<File
-				RelativePath=".\libs\fc++.1.5\config.h"
+				RelativePath=".\libs\include\config.h"
 				>
 			</File>
 			<File
@@ -284,11 +284,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\scorematrix.h"
+				RelativePath=".\src\seaweeds\ScoreMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\ScoreMatrix.h"
+				RelativePath=".\src\windowlocal\scorematrix.h"
 				>
 			</File>
 			<File
@@ -357,6 +357,10 @@
 			</File>
 			<File
 				RelativePath=".\tuning_config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\util\TypeList.h"
 				>
 			</File>
 			<File

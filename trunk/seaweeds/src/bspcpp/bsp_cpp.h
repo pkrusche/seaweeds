@@ -8,7 +8,7 @@
 
 #include "bsp.h"
 
-#include <loki/TypeTraits.h>
+#include <util/TypeList.h>
 #include <string>
 #include <string.h>
 
@@ -75,7 +75,7 @@ namespace bsp {
 				bsp_broadcast(source, it->second);
 			}
 		} else {
-			for (int j = 0; j < size; ++j) {
+			for (size_t j = 0; j < size; ++j) {
 				string name;
 				Parameter value; 
 				bsp_broadcast(source, name);

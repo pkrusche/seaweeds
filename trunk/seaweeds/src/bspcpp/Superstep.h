@@ -17,7 +17,7 @@
 #include <tbb/atomic.h>
 #include <tbb/tbb_thread.h>
 
-#include "loki/NullType.h"
+#include "util/TypeList.h"
 
 #include "bspcpp/tools/singletons.h"
 #include "bspcpp/ParameterFile.h"
