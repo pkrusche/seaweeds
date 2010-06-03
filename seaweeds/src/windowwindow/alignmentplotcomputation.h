@@ -437,7 +437,7 @@ namespace windowlocal {
 				if (max_windowpairs > 0) {
 					buffersize = max_windowpairs;
 				}
-				cout << "Window buffer size is " << buffersize << endl;
+				std::cout << "Window buffer size is " << buffersize << std::endl;
 				tp = new translate_and_print_with_buffer<string>(*output, 
 					buffersize,
 					winlen, winlen, cutoffthreshold, 
