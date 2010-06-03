@@ -32,7 +32,7 @@ namespace bsp {
 	 * make sure the correct overloaded methods are used (i.e. the compuation
 	 * runs using threads and not nodes.
 	 */
-	template <class _context = Loki::NullType>
+	template <class _context = utilities::NullType>
 	class DefaultSuperstep {
 	public:
 		typedef _context context_t;
