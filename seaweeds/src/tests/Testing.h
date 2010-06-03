@@ -11,7 +11,7 @@
 #include <list>
 #include <map>
 
-#include <util/Typelist.h>
+#include "util/Typelist.h"
 
 #include "bspcpp/tools/utilities.h"
 
