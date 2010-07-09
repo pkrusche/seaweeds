@@ -12,6 +12,12 @@
 #include "xasmlib/IntegerVector.h"
 #include "checkpoint/checkpoint.h"
 #include "seaweeds/ScoreMatrix.h"
+#include "seaweeds/MultiSeaweeds.h"
+
+#ifdef _HAVE_ATI_GPU
+#include "gpulib/ATI_Gpulib.h"
+#endif // _HAVE_ATI_GPU
+
 
 namespace windowlcs {
 	template<int _omega, int _bpc, class _report>
@@ -19,6 +25,11 @@ namespace windowlcs {
 	public:
 		typedef typename seaweeds::ScoreMatrix<seaweeds::ImplicitStorage<seaweeds::Seaweeds<_omega, _bpc> > > scorematrix;
 		typedef typename scorematrix::string string;
+#ifdef _HAVE_ATI_GPU
+		typedef seaweeds::MultiSeaweeds_GPU MultiSeaweeds_t;
+#else
+		typedef seaweeds::MultiSeaweeds<scorematrix> MultiSeaweeds_t;
+#endif // _HAVE_ATI_GPU
 
 		// each strip gets a score matrix
 		typedef struct {
@@ -26,7 +37,7 @@ namespace windowlcs {
 			string x;
 			string y;
 #endif
-			size_t m; size_t n;
+			int m; int n;
 			typename scorematrix::archive * a;
 		} STRIP;
 
@@ -47,15 +58,12 @@ namespace windowlcs {
 		 *  ideally, overlap_size and windowlength should be multiples of step1
 		 * \return number characters in p_1 actually covered
 		 */
-		size_t multistrip_overlap(size_t p1_start) {
-			size_t strips_height = overlap_size;
-			size_t n_strips = (windowlength - strips_height) / step1 + 1;
-			size_t real_overlap_size = n_strips*step1;
-			
+		int multistrip_overlap(int strip_id) {		
+			int p1_start = strip_id * real_overlap_size;
+
 			// compute scorematrix for the shared bit
-			scorematrix m(overlap_size, p_s2->size());
-			string shared_substring = p_s1->substr(p1_start + windowlength - overlap_size, overlap_size);
-			m.semilocallcs(shared_substring, *p_s2);
+			scorematrix m(overlap_size, p_s2->size(), shared_strip_hsms.get_seaweedpermutation(strip_id));
+
 			m.reverse_xy();
 
 			std::vector<STRIP> v(n_strips);
@@ -68,7 +76,7 @@ namespace windowlcs {
 			v[0].y = m.get_y();
 #endif
 
-			size_t cur_pos = p1_start + windowlength - overlap_size - step1;
+			int cur_pos = p1_start + windowlength - overlap_size - step1;
 			// extend towards the top
 			for(int j = 1; j < n_strips; ++j) {
 				string add_substring = p_s1->substr(cur_pos, step1);
@@ -85,7 +93,7 @@ namespace windowlcs {
 			}
 
 			// extend towards bottom and query
-			size_t extend_start = p1_start + windowlength;
+			int extend_start = p1_start + windowlength;
 			cur_pos = extend_start - overlap_size;
 			for(int j = 0; j < n_strips; ++j) {
 				scorematrix m(v[j].m, v[j].n, *v[j].a);
@@ -95,7 +103,7 @@ namespace windowlcs {
 #endif
 				m.reverse_xy();
 				m.get_y() = string(*((string *)p_s2), p_s2->size());
-				size_t extend_len = windowlength - m.get_m();
+				int extend_len = windowlength - m.get_m();
 				if(extend_len > 0) {
 					string add_substring = p_s1->substr(extend_start, extend_len);
 					m.incremental_semilocallcs(add_substring, scorematrix::APPEND_TO_X);
@@ -120,8 +128,8 @@ namespace windowlcs {
 
 		void run() {
 			using namespace std;
-			size_t m   = p_s1->size();			
-			size_t p = 0;
+			int m   = p_s1->size();			
+			int p = 0;
 
 			// the shared portion of all strips
 			if (overlap_size <= 0) {
@@ -134,8 +142,27 @@ namespace windowlcs {
 			double t0 = utilities::time();
 			double dtl = 0;
 
-			while (p <= m-(signed)windowlength) {
-				p+= multistrip_overlap(p);
+			strips_height = overlap_size;
+			n_strips = (windowlength - strips_height) / step1 + 1;
+			real_overlap_size = n_strips*step1;
+
+			const int precomp_in_one_go = 400;
+			int strip_id = 0;
+			while (p <= m-windowlength) {
+				if(strip_id%precomp_in_one_go == 0) {
+					int overall_n_strips = min(precomp_in_one_go, (m - windowlength + step1 - 1) / step1);
+
+					string * all_shared_strings  = new string[overall_n_strips];
+					for (int j = 0; j < overall_n_strips; ++j) {
+						all_shared_strings[j] = p_s1->substr(j*real_overlap_size + windowlength - overlap_size, overlap_size);
+					}
+					shared_strip_hsms.run(all_shared_strings, overall_n_strips, *p_s2);
+					delete [] all_shared_strings;
+				}
+
+				p+= multistrip_overlap(strip_id % precomp_in_one_go);
+				strip_id++;
+
 				double dt = utilities::time() - t0;
 
 				if(dt - dtl > 5) {
@@ -173,14 +200,20 @@ namespace windowlcs {
 		size_t step2;
 		_report * reporter;
 
+		int strips_height;
+		int n_strips;
+		int real_overlap_size;
+
 		int overlap_size;
+
+		MultiSeaweeds_t shared_strip_hsms;
 	};
 
 
 	template <int _bpc, int _omega> 
 	class SeaweedOverlapMatcherGenerator {
 	public:
-		typedef typename seaweeds::ScoreMatrix<seaweeds::ImplicitStorage<seaweeds::Seaweeds<_omega, _bpc> > > scorematrix;
+		typedef typename seaweeds::ScoreMatrix< seaweeds::ImplicitStorage<seaweeds::Seaweeds<_omega, _bpc> > > scorematrix;
 		typedef typename scorematrix::string string;
 
 		SeaweedOverlapMatcherGenerator() {}

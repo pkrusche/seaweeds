@@ -92,7 +92,6 @@ void test() {
 	SCOREMATRIX::dumpdensity(cout, m);
 	SCOREMATRIX::dumpdistribution(cout, m);
 	SCOREMATRIX::dumpscore(cout, m);
-
 }
 
 int main(int argc, char *argv[]) {

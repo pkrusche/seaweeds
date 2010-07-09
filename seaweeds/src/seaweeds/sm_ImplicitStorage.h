@@ -13,6 +13,9 @@
 
 namespace seaweeds {
 
+/**
+ *  \brief Implicit highest score matrices using the column-based seaweed algorithm
+ */
 template <class _slcsfun = seaweeds::Seaweeds<>, 
 	      template <class, class> class range = rangesearching::Range2DTL
 >
