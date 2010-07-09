@@ -1,28 +1,34 @@
 
-kernel void compnet_stage(char x[], char y[], int offset, int len, int x_start, int y_end, int p[], out int o <>) {
-	int idx = instance().x;
+kernel void compnet_stage_2d (
+		char x[][], char y[], 
+		int offset, int len, int x_start, int y_end, 
+		int p[][], out int o<>) {
+	int idx = instance().y;
+	int idy = instance().x;
+	
 	if(idx >= offset && idx < offset+len) {
 		int idxd2 = (len - idx+offset - 1) >> 1; 
-		int match = ((int)x[x_start + idxd2] == (int)y[y_end - idxd2]);
-		int minmax = ((idx-offset) & 1) == 0 ? 1 : 0;
+		int c_x = (int)x[idy][x_start + idxd2];
+		int c_y = (int)y[y_end - idxd2];
 
-		if(match != 0) {
-			o = p[idx];
-		} else {
+		int match = (c_x == c_y) ? 1 : 0;
+		int minmax = ((idx-offset) & 1) == 0 ? 1 : 0;
+		
+		// do seaweed automaton
+		if(match == 0) {
 			int idx_min = ((idx-offset) & ~1) + offset;
-			int idx_max = ((idx-offset) & ~1) + offset + 1;
-			if (minmax == 0) {
-				o = min(p[idx_min], p[idx_max]);
+			int idx_max = idx_min + 1;
+			int val_l = p[idx_min][idy];
+			int val_t = p[idx_max][idy];
+			if(minmax == 0) {
+				o = min(val_l, val_t);
 			} else {
-				o = max(p[idx_min], p[idx_max]);
+				o = max(val_l, val_t);
 			}
+		} else {
+			o = p[idx][idy];
 		}
 	} else {
-		o = p[idx];
+		o = p[idx][idy];
 	}
-}
-
-kernel void invert_permutation(int p<>, out int o[]) {
-	int idx = instance().x;
-	o[p] = idx;
 }

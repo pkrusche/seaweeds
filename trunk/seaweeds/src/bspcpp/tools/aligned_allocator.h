@@ -9,7 +9,7 @@
 #include "boost/cstdint.hpp"
 
 namespace utilities {
-	template<class T> class aligned_allocator {
+	template<class T, size_t _align = 32> class aligned_allocator {
 	public:
 		typedef T value_type;
 		typedef value_type* pointer;
@@ -24,7 +24,7 @@ namespace utilities {
 			typedef aligned_allocator<U> other;
 		};
 
-		enum { ALIGNMENT = 32,
+		enum { ALIGNMENT = _align,
 			ALIGN_MASK = ALIGNMENT - 1
 		};
 
