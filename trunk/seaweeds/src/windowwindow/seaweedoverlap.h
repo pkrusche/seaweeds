@@ -150,7 +150,7 @@ namespace windowlcs {
 			int strip_id = 0;
 			while (p <= m-windowlength) {
 				if(strip_id%precomp_in_one_go == 0) {
-					int overall_n_strips = min(precomp_in_one_go, (m - windowlength + step1 - 1) / step1);
+					int overall_n_strips = min(precomp_in_one_go, (int)((m - windowlength + step1 - 1) / step1));
 
 					string * all_shared_strings  = new string[overall_n_strips];
 					for (int j = 0; j < overall_n_strips; ++j) {

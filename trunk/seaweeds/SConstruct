@@ -28,7 +28,6 @@ else:
 
 print 'Using options from ' + optfilename
 
-subarch = platform.uname()[4]
 opts = Variables(optfilename)
 
 # these are the options that can be specified through the command line
@@ -117,7 +116,16 @@ root.SetOption('implicit_cache', 1)
 root.SetOption('diskcheck', None)
 root.Ignore('', '')
 
+subarch = platform.uname()[4]
+bitness = platform.architecture()[0]
 platform = ARGUMENTS.get('OS', root['PLATFORM'])
+if platform == 'darwin' and bitness == '64bit':
+	print "MacOS X: using 64 bit mode"
+	subarch = 'x86_64'
+else:
+	print platform + " " + platform.architecture()[0]
+
+
 mode = root['mode']
 toolset = root['toolset']
 profile = root['profile']
@@ -137,7 +145,6 @@ print "Compiling on platform "+ platform + " using mode " + mode + " and compile
 root.Append(
     CCFLAGS = ' $CFLAGS',
     CPPPATH = ['#src' ],
-    LIBPATH = ['#libs' ],
 )
 
 if platform == 'win32':
@@ -195,8 +202,8 @@ else:
 		# Unix-like stuff
 		root.Append(
 			CCFLAGS = ' $CFLAGS',
-			CPPPATH = ['.', '#src','#libs/FC++.1.5', '#libs/include'],
-			LIBPATH = ['.', '#libs'],
+			CPPPATH = ['.', '#src'],
+			LIBPATH = ['.'],
 		)
 
 
@@ -211,9 +218,12 @@ root.Append(
 
 if string.find(cxx, 'g++') >= 0 or string.find(cxx, 'c++') >= 0 or root['toolset'] == 'gcc':
 	if mode == 'debug':
+		as_debugformat = 'dwarf2'
+		if subarch == 'x86_64':
+			as_debugformat = 'null'
 		root.Append(
 		CCFLAGS=' -g -O0',
-		ASFLAGS=' -g dwarf2',
+		ASFLAGS=' -g '+as_debugformat+' ',
 		)
 	elif mode == 'release':
 		if debuginfo:
@@ -277,7 +287,10 @@ if platform == 'win32':
 	if mode == 'debug' or profile:
 		root.Append(ASFLAGS = " -g cv8")
 elif platform == 'darwin':
-    root.Append(ASFLAGS = " -f macho ")	
+	if subarch == 'x86_64':
+		root.Append(ASFLAGS = " -f macho64 ")	
+	else:
+		root.Append(ASFLAGS = " -f macho ")	
 else:
     if subarch == 'x86_64':
          root.Append(ASFLAGS = " -f elf64 ")

@@ -97,45 +97,52 @@ BSP_SUPERSTEP_DEF_BEGIN(ComputeAlignments, context, bsp::ProcMapper)
 	str << resultfile << "_" << node;
 	resultfile = str.str();
 
-	{
+	if (context.data_size >= g_windowlength) {
+		{
+			tbb::mutex::scoped_lock l(g_cout_mutex);
+			cout << "proc " << node
+				 << " starting at block " << node * g_block_size_per_proc
+				  << " (char " << context.data_offset << ")/"
+				 << g_block_size <<
+				", will process " << (context.data_size-g_windowlength+1) / g_firststepwidth
+				<< " blocks (" << context.data_size << " chars)" << endl;
+			cout << flush;
+		}
+
+		context.my_apc.preprocess_inputs();
+		context.my_apc.setoutput(resultfile, (int)context.data_offset);
+
+		utilities::Checkpointable * computation = context.my_apc.generate_matcher();
+
+		double comp_time_0 = utilities::time();
+		computation->run();
+		{
+			tbb::mutex::scoped_lock l(g_cout_mutex);
+			cout << "Computation time on proc " << node << " : " << utilities::time() - comp_time_0 << flush << endl;
+		}
+		delete computation;
+
+		int firststepwidth;
+		g_apc.parameters().get("firststepwidth", firststepwidth);
+
+		// write a profile
+		bsp_global_put(	context.my_apc.get_profile_a(),
+			g_profile_a,
+			sizeof(double) * bsp_pid() * g_profile_size_per_proc,
+			sizeof(double) * context.my_apc.get_profile_size_a());
+
+		// write b profile
+		bsp_global_put(	context.my_apc.get_profile_b(),
+			g_profile_b,
+			sizeof(double) * context.my_apc.get_profile_size_b() * bsp_pid(),
+			sizeof(double) * context.my_apc.get_profile_size_b());
+	} else {
 		tbb::mutex::scoped_lock l(g_cout_mutex);
 		cout << "proc " << node
-			 << " starting at block " << node * g_block_size_per_proc 
-			  << " (char " << context.data_offset << ")/" 
-			 << g_block_size <<
-			", will process " << (context.data_size-g_windowlength+1) / g_firststepwidth
-			<< " blocks (" << context.data_size << " chars)" << endl;
+			 << " starting at block " << node * g_block_size_per_proc <<
+			", will process no blocks." << endl;
 		cout << flush;
 	}
-
-	context.my_apc.preprocess_inputs();
-	context.my_apc.setoutput(resultfile, (int)context.data_offset);
-
-	utilities::Checkpointable * computation = context.my_apc.generate_matcher();
-
-	double comp_time_0 = utilities::time();
-	computation->run();
-	{
-		tbb::mutex::scoped_lock l(g_cout_mutex);
-		cout << "Computation time on proc " << node << " : " << utilities::time() - comp_time_0 << flush << endl;
-	}
-	delete computation;
-
-	int firststepwidth;
-	g_apc.parameters().get("firststepwidth", firststepwidth);
-
-	// write a profile
-	bsp_global_put(	context.my_apc.get_profile_a(), 
-		g_profile_a, 
-		sizeof(double) * bsp_pid() * g_profile_size_per_proc, 
-		sizeof(double) * context.my_apc.get_profile_size_a());
-
-	// write b profile
-	bsp_global_put(	context.my_apc.get_profile_b(), 
-		g_profile_b,
-		sizeof(double) * context.my_apc.get_profile_size_b() * bsp_pid(), 
-		sizeof(double) * context.my_apc.get_profile_size_b());
-	
 	// flush and close output
 	context.my_apc.setoutput("");
 BSP_SUPERSTEP_DEF_END()
@@ -199,7 +206,6 @@ void spmd_computation() {
 	g_profile_b = bsp_global_alloc(sizeof(double) * g_apc.get_profile_size_b() * processors);
  
 	bsp_sync();
-
 
 	g_displs = new size_t [processors];
 
