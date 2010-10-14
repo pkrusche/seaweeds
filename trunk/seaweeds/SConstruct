@@ -118,12 +118,12 @@ root.Ignore('', '')
 
 subarch = platform.uname()[4]
 bitness = platform.architecture()[0]
-platform = ARGUMENTS.get('OS', root['PLATFORM'])
-if platform == 'darwin' and bitness == '64bit':
+platform_name = ARGUMENTS.get('OS', root['PLATFORM'])
+if platform_name == 'darwin' and bitness == '64bit':
 	print "MacOS X: using 64 bit mode"
 	subarch = 'x86_64'
 else:
-	print platform + " " + platform.architecture()[0]
+	print platform_name + " " + platform.architecture()[0]
 
 
 mode = root['mode']
@@ -140,14 +140,14 @@ win32_ccpdir = root['win32_ccpdir']
 win32_bsponmpidir = root['win32_bsponmpidir']
 
 cxx = str(root['CXX'])
-print "Compiling on platform "+ platform + " using mode " + mode + " and compiler " + cxx + "."
+print "Compiling on platform "+ platform_name + " using mode " + mode + " and compiler " + cxx + "."
 
 root.Append(
     CCFLAGS = ' $CFLAGS',
     CPPPATH = ['#src' ],
 )
 
-if platform == 'win32':
+if platform_name == 'win32':
     # Win32 specific setup
       
     boost_include = ''
@@ -245,7 +245,7 @@ if string.find(cxx, 'g++') >= 0 or string.find(cxx, 'c++') >= 0 or root['toolset
 	   root.Replace(CXX = root['gcc_stlfilt'])
 	print "using g++"
 else:
-	if platform == 'win32':
+	if platform_name == 'win32':
 		msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
 		msvc_linkflags = " /DEBUG"
 		if mode == 'debug':
@@ -278,7 +278,7 @@ else:
 if int(root['use_yasm']):
 	root.Replace(AS = 'yasm')
 	
-if platform == 'win32':
+if platform_name == 'win32':
 	if subarch == 'AMD64':
 	    root.Append(ASFLAGS = " -f win64 ")
 	else:
@@ -286,7 +286,7 @@ if platform == 'win32':
 	
 	if mode == 'debug' or profile:
 		root.Append(ASFLAGS = " -g cv8")
-elif platform == 'darwin':
+elif platform_name == 'darwin':
 	if subarch == 'x86_64':
 		root.Append(ASFLAGS = " -f macho64 ")	
 	else:
@@ -320,7 +320,7 @@ def run(program, *args):
             pass
     raise os.error, "cannot find executable"
 
-if platform != 'win32':
+if platform_name != 'win32':
 	try:
 		run(root['gcc_stlfilt'])
 		root["CXX"] = root['gcc_stlfilt']
@@ -548,7 +548,7 @@ else:
 		)
 
 if not sequential:
-	if platform == 'win32':
+	if platform_name == 'win32':
 		win32_ccpdir = root['win32_ccpdir']
 		mpi.Append(	CPPPATH = win32_ccpdir+"\\Include",
 				LIBS = ["msmpi.lib", "msmpe.lib"]
