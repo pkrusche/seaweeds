@@ -39,26 +39,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="0"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="scons -Q mode=release sequential=1"
-				ReBuildCommandLine="scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1"
-				CleanCommandLine="scons -Q mode=release sequential=1 -c"
-				Output=""
-				PreprocessorDefinitions="WIN32;NDEBUG;"
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -71,6 +51,26 @@
 				CleanCommandLine="scons -Q mode=debug sequential=1 -c"
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG;"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="scons -Q mode=release sequential=1"
+				ReBuildCommandLine="scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1"
+				CleanCommandLine="scons -Q mode=release sequential=1 -c"
+				Output=""
+				PreprocessorDefinitions="WIN32;NDEBUG;"
 				IncludeSearchPath=""
 				ForcedIncludes=""
 				AssemblySearchPath=""
@@ -276,11 +276,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\Seaweeds.h"
+				RelativePath=".\src\windowlocal\seaweeds.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\seaweeds.h"
+				RelativePath=".\src\seaweeds\Seaweeds.h"
 				>
 			</File>
 			<File
@@ -289,6 +289,10 @@
 			</File>
 			<File
 				RelativePath=".\src\gpulib\seaweeds_gpu_gpu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\datamodel\sequence.h"
 				>
 			</File>
 			<File
@@ -505,11 +509,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 	</Files>
