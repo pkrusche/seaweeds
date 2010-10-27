@@ -1,10 +1,11 @@
-cl_stlfilt = '"C:\\Documents and Settings\\peter\\STLFilt\\MFilt.bat"'
-win32_boostdir = 'g:\\Boost\\include';
-win32_lokidir = 'g:\\Boost\\loki';
-win32_tbbdir = 'g:\\tbb';
-win32_bsponmpidir = 'C:\\Documents and Settings\\peter\\workspace\\bsponmpi'
+cl_stlfilt = 'cl'
+win32_boostdir = 'c:\\Boost\\include';
+win32_lokidir = 'c:\\Boost\\loki';
+win32_tbbdir = 'C:\\Users\\peter\\Documents\\Code\\tbb30_018oss';
+win32_bsponmpidir = 'C:\\Users\\peter\\workspace\\bsponmpi'
 BRCCFLAGS = " -p cpu ";
 use_ati_brook = 0;
 BROOKROOT='C:\\Program Files\\ATI\\ATI Brook+ 1.4.0_beta'
 configure = 1
 sequential=1
+additional_lflags = "/LARGEADDRESSAWARE:NO libboost_regex-vc90-mt-gd.lib libboost_program_options-vc90-mt.lib"
