@@ -86,10 +86,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="scons -Q mode=release sequential=1"
+				BuildCommandLine="scons -Q mode=release sequential=1 $(TargetPath)"
 				ReBuildCommandLine="scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1"
 				CleanCommandLine="scons -Q mode=release sequential=1 -c"
-				Output=""
+				Output="bin\dynamicprogramming_testing_win32_default_release.exe"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -157,6 +157,10 @@
 			</File>
 			<File
 				RelativePath=".\src\seaweeds\defs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\dynamicprogramming\dp_matrix.h"
 				>
 			</File>
 			<File
@@ -264,11 +268,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\scorematrix.h"
+				RelativePath=".\src\seaweeds\ScoreMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\ScoreMatrix.h"
+				RelativePath=".\src\windowlocal\scorematrix.h"
 				>
 			</File>
 			<File
@@ -276,11 +280,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\seaweeds.h"
+				RelativePath=".\src\seaweeds\Seaweeds.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\Seaweeds.h"
+				RelativePath=".\src\windowlocal\seaweeds.h"
 				>
 			</File>
 			<File
@@ -381,6 +385,10 @@
 			</File>
 			<File
 				RelativePath=".\.sconf_temp\conftest_1.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tests\dynamicprogramming_testing.cpp"
 				>
 			</File>
 			<File
@@ -509,11 +517,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 	</Files>

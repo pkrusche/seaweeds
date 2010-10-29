@@ -40,50 +40,76 @@ namespace dynamic_programming {
 	template <class input_t, class dp_element_t, class operator_t>
 	class dp_matrix_solver {
 	public:
+		dp_matrix_solver() {
+			cur_top_row = &top_dp_row;
+			cur_left_col = &left_dp_column;
+			prev_top_row = cur_top_row;
+			prev_left_col = cur_left_col;
+		}
+
+		std::vector<dp_element_t> * cur_top_row;
+		std::vector<dp_element_t> * prev_top_row;
+		std::vector<dp_element_t> * cur_left_col;
+		std::vector<dp_element_t> * prev_left_col;
+
+	private:
 		/*!
 		 * The row and column containing the initial values of the current block
 		 */
 		std::vector<dp_element_t> left_dp_column;
 		std::vector<dp_element_t> top_dp_row;
 
+		std::vector<dp_element_t> tmp_dp;
+
 		/*!
 		 * the operator. 
 		 */
 		operator_t op;
 
-		void operator() (input_t left_input, input_t top_input) {
+	public:
+		dp_element_t operator() (input_t left_input, input_t top_input) {
 			size_t m = left_input.size();
 			size_t n = top_input.size();
 
 			if(left_dp_column.size() < m+1) {
-				left_dp_column.resize(m+1)
+				left_dp_column.resize(m+1);
 			}
 
 			if(top_dp_row.size() < n+1) {
-				top_dp_row.resize(n+1)
+				top_dp_row.resize(n+1);
 			}
 			
+			dp_element_t last;
+
 			if(m >= n) {
+				if(tmp_dp.size() < top_dp_row.size()) {
+					tmp_dp.resize(top_dp_row.size());
+				}
+				prev_top_row = &top_dp_row;
+				cur_top_row = &tmp_dp;
+			
 				for (size_t i = 1; i <= m; ++i) {
-					dp_element_t left = left_dp_column[i];
+					last = (*cur_left_col)[i];
 					for (size_t j = 1; j <= n; ++j) {
-						dp_element_t left_copy = left;
-						op(i, j, left_input[i-1], top_input[j-1], left_copy, top_dp_row[j-1], top_dp_row[j], left);
-						top_dp_row[j] = left;
+						dp_element_t left_copy = last;
+						op(i, j, left_input[i-1], top_input[j-1], left_copy, (*prev_top_row)[j-1], (*prev_top_row)[j], last);
+						(*cur_top_row)[j] = last;
 					}
-					left_dp_column[i] = left;
+					swap(cur_top_row, prev_top_row);
+					(*cur_left_col)[i] = last;
 				}
 			} else {
 				for (size_t j = 1; j <= n; ++j) {
-					dp_element_t top = top_dp_row[j];
+					last = top_dp_row[j];
 					for (size_t i = 1; i <= m; ++i) {
-						dp_element_t top_copy = top;
-						op(i, j, left_input[i-1], top_input[j-1], left_dp_column[i], left_dp_column[i-1], top_copy, top);
-						left_dp_column[i] = top;
+						dp_element_t top_copy = last;
+						op(i, j, left_input[i-1], top_input[j-1], (*cur_left_col)[i], (*cur_left_col)[i-1], top_copy, last);
+						(*cur_left_col)[i] = last;
 					}
-					top_dp_row[j] = top;
+					top_dp_row[j] = last;
 				}
 			}
+			return last;
 		}
 	};
 };
