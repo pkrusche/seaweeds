@@ -10,6 +10,10 @@ root.Program('#bin/mwwtesting', ['mwwtesting.cpp'])
 # Test of all LCS computation routines.
 root.Program('#bin/lcstesting', ['lcstesting.cpp'])
 
+# Test generic dynamic programming framework
+root.Program('#bin/dynamicprogramming_testing', ['dynamicprogramming_testing.cpp'])
+
+
 # Test window local comparison routines
 root.Program('#bin/windowlocaltesting', ['windowlocaltesting.cpp'])
 

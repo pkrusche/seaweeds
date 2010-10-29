@@ -123,7 +123,7 @@ if platform_name == 'darwin' and bitness == '64bit':
 	print "MacOS X: using 64 bit mode"
 	subarch = 'x86_64'
 else:
-	print platform_name + " " + platform.architecture()[0]
+	print "We are on platform " + platform_name + " " + platform.architecture()[0] + " " + subarch
 
 
 mode = root['mode']
@@ -139,7 +139,7 @@ win32_tbbdir = root['win32_tbbdir']
 win32_ccpdir = root['win32_ccpdir']
 win32_bsponmpidir = root['win32_bsponmpidir']
 
-cxx = str(root['CXX'])
+cxx = str(root.subst('$CXX'))
 print "Compiling on platform "+ platform_name + " using mode " + mode + " and compiler " + cxx + "."
 
 root.Append(

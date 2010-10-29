@@ -8,4 +8,5 @@ use_ati_brook = 0;
 BROOKROOT='C:\\Program Files\\ATI\\ATI Brook+ 1.4.0_beta'
 configure = 1
 sequential=1
+debuginfo = 1
 additional_lflags = "/LARGEADDRESSAWARE:NO libboost_regex-vc90-mt-gd.lib libboost_program_options-vc90-mt.lib"
