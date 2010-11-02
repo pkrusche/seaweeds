@@ -51,7 +51,7 @@
 				CleanCommandLine="scons -Q mode=debug sequential=1 -c"
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG;"
-				IncludeSearchPath=""
+				IncludeSearchPath="src"
 				ForcedIncludes=""
 				AssemblySearchPath=""
 				ForcedUsingAssemblies=""
@@ -91,7 +91,7 @@
 				CleanCommandLine="scons -Q mode=release sequential=1 -c"
 				Output="bin\dynamicprogramming_testing_win32_default_release.exe"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
-				IncludeSearchPath=""
+				IncludeSearchPath="src"
 				ForcedIncludes=""
 				AssemblySearchPath=""
 				ForcedUsingAssemblies=""
@@ -268,11 +268,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\ScoreMatrix.h"
+				RelativePath=".\src\windowlocal\scorematrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\scorematrix.h"
+				RelativePath=".\src\seaweeds\ScoreMatrix.h"
 				>
 			</File>
 			<File
@@ -280,11 +280,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\Seaweeds.h"
+				RelativePath=".\src\windowlocal\seaweeds.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\seaweeds.h"
+				RelativePath=".\src\seaweeds\Seaweeds.h"
 				>
 			</File>
 			<File
@@ -516,12 +516,36 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="My Amplifier Results"
+			>
+			<File
+				RelativePath=".\My Amplifier Results\r000hs\r000hs.ampl"
+				>
+			</File>
+			<File
+				RelativePath=".\My Amplifier Results\r001hs\r001hs.ampl"
+				>
+			</File>
+			<File
+				RelativePath=".\My Amplifier Results\r002hs\r002hs.ampl"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="My Inspector Results"
+			>
+			<File
+				RelativePath=".\My Inspector Results\r001mi2\r001mi2.insp"
+				>
+			</File>
+		</Filter>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 	</Files>

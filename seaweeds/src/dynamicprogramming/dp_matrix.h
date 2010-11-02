@@ -81,33 +81,21 @@ namespace dynamic_programming {
 			
 			dp_element_t last;
 
-			if(m >= n) {
-				if(tmp_dp.size() < top_dp_row.size()) {
-					tmp_dp.resize(top_dp_row.size());
-				}
-				prev_top_row = &top_dp_row;
-				cur_top_row = &tmp_dp;
-			
-				for (size_t i = 1; i <= m; ++i) {
-					last = (*cur_left_col)[i];
-					for (size_t j = 1; j <= n; ++j) {
-						dp_element_t left_copy = last;
-						op(i, j, left_input[i-1], top_input[j-1], left_copy, (*prev_top_row)[j-1], (*prev_top_row)[j], last);
-						(*cur_top_row)[j] = last;
-					}
-					swap(cur_top_row, prev_top_row);
-					(*cur_left_col)[i] = last;
-				}
-			} else {
+			if(tmp_dp.size() < top_dp_row.size()) {
+				tmp_dp.resize(top_dp_row.size());
+			}
+			prev_top_row = &top_dp_row;
+			cur_top_row = &tmp_dp;
+		
+			for (size_t i = 1; i <= m; ++i) {
+				last = (*cur_left_col)[i];
 				for (size_t j = 1; j <= n; ++j) {
-					last = top_dp_row[j];
-					for (size_t i = 1; i <= m; ++i) {
-						dp_element_t top_copy = last;
-						op(i, j, left_input[i-1], top_input[j-1], (*cur_left_col)[i], (*cur_left_col)[i-1], top_copy, last);
-						(*cur_left_col)[i] = last;
-					}
-					top_dp_row[j] = last;
+					dp_element_t left_copy = last;
+					op(i, j, left_input[i-1], top_input[j-1], left_copy, (*prev_top_row)[j-1], (*prev_top_row)[j], last);
+					(*cur_top_row)[j] = last;
 				}
+				swap(cur_top_row, prev_top_row);
+				(*cur_left_col)[i] = last;
 			}
 			return last;
 		}

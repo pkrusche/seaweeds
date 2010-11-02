@@ -49,20 +49,21 @@ opts.AddVariables(
 	BoolVariable('use_yasm', 'Use yasm instead of nasm', 1),
 	BoolVariable('use_ati_brook', 'Use ATI brook+', 0),
 	BoolVariable('sequential', 'Use sequential bsponmpi (no MPI)', 0),
-	('cl_stlfilt', 'Path to STLFilt for MSVC', ''),
-    ('gcc_stlfilt', 'Path to STLFilt for gcc', 'c++'),
     ('win32_boostdir', 'Path to Boost library in Win32', 'C:\\Boost\\include'),
     ('win32_ccpdir', 'Path to Microsoft Compute Cluster Pack in Win32', 'C:\\Program Files\\Microsoft Compute Cluster Pack'),
     ('win32_tbbdir', 'Path to tbb library in Win32', 'C:\\tbb'),
     ('win32_bsponmpidir', 'Path to bsponmpi library in Win32', 'C:\\bsponmpi'),
     ('BROOKROOT', 'Path to ATI Stream SDK', ''),
-    ('QTDIR', 'Path to QT library in Win32', 'C:\\Qt'),
 	('toolset', 'Specify compiler and linker tools: gcc|default', 'default'),
 	('additional_lflags', 'Additional linker flags', ''),
 	('additional_cflags', 'Additional compiler flags', ''),
 	('MPICC', 'MPI c compiler wrapper (Unix only)', 'mpicc'),
 	('MPICXX', 'MPI c++ compiler wrapper (Unix only)', 'mpicxx'),
 	('MPILINK', 'MPI linker wrapper (Unix only)', 'mpicxx'),
+	('replacement_CC', 'Replacement for the standard C compiler', ''),
+	('replacement_CXX', 'Replacement for the standard C++ compiler', ''),
+	('replacement_LIB', 'Replacement for the standard lib tool', ''),
+	('replacement_LINK', 'Replacement for the standard linker ', ''),
 	)
 
 SCons.Defaults.DefaultEnvironment(tools = [])
@@ -206,7 +207,6 @@ else:
 			LIBPATH = ['.'],
 		)
 
-
 root.Append(
 	CCFLAGS = root['additional_cflags'],
 	LINKFLAGS = root['additional_lflags'],
@@ -241,8 +241,6 @@ if string.find(cxx, 'g++') >= 0 or string.find(cxx, 'c++') >= 0 or root['toolset
 			CCFLAGS=' -O2',
 			)
 		
-	if root['gcc_stlfilt']:
-	   root.Replace(CXX = root['gcc_stlfilt'])
 	print "using g++"
 else:
 	if platform_name == 'win32':
@@ -255,7 +253,7 @@ else:
 			)
 		elif mode == 'release':
 			root.Append( 
-			CCFLAGS='/MD /O2 '+msvc_ccflags,
+			CCFLAGS='/MD /O2 /GL '+msvc_ccflags,
 			LINKFLAGS=msvc_linkflags
 			)
 			if debuginfo or profile:
@@ -264,11 +262,24 @@ else:
 					LINKFLAGS=' /DEBUG '
 				)							
 			
-		if root['cl_stlfilt']:
-			root.Replace(
-				CXX = root['cl_stlfilt'],
-			)
 		print "using MSVC"
+		
+if root['replacement_CC']:
+	root.Replace(
+		CC=root['replacement_CC']
+	)
+if root['replacement_CXX']:
+	root.Replace(
+		CXX=root['replacement_CXX']
+	)
+if root['replacement_LIB']:
+	root.Replace(
+		AR=root['replacement_LIB']
+	)
+if root['replacement_LINK']:
+	root.Replace(
+		LINK=root['replacement_LINK']
+	)
 
 ###############################################################################
 # Setup nasm/yasm object file types
@@ -305,27 +316,6 @@ if mode=='debug':
 	root.Append(LIBS = ['tbb_debug'])
 else:
 	root.Append(LIBS = ['tbb'])
-
-###############################################################################
-# Check for STLFilt
-###############################################################################
-
-def run(program, *args):
-	# find executable
-    for path in string.split(os.environ["PATH"], os.pathsep):
-        file = os.path.join(path, program) + ".exe"
-        try:
-            return os.spawnv(os.P_WAIT, file, (file,) + args)
-        except os.error:
-            pass
-    raise os.error, "cannot find executable"
-
-if platform_name != 'win32':
-	try:
-		run(root['gcc_stlfilt'])
-		root["CXX"] = root['gcc_stlfilt']
-	except os.error:
-		print "Gfilt not found, using g++"
 
 ###############################################################################
 # Setup automatic parameter tuning

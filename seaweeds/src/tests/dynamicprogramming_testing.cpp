@@ -40,10 +40,11 @@ int main(int argc, const char * argv[]) {
 	init_xasmlib();
 	int testsize = 10000;
 
-	IntegerVector<8> s1(testsize), s2(testsize);
+	IntegerVector<8> s1(testsize/10), s2(testsize);
 	for (size_t j = 0; j < testsize; ++j) {
-		s1[j] = rand() % 4;
-		s2[j] = rand() % 4;
+		if(j < testsize/10)
+			s1[j] = rand() % 4;
+		s2[j] = rand() % 256;
 	}
 
 	dp_matrix_solver<IntegerVector<8>, int, dp_lcs_op> solver;
