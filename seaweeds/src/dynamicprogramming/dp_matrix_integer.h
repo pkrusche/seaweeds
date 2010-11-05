@@ -8,6 +8,8 @@
 
 #include <xasmlib/IntegerVector.h>
 
+#include "bspcpp/tools/aligned_allocator.h"
+
 namespace dynamic_programming {
 
 	/*!
@@ -36,66 +38,114 @@ namespace dynamic_programming {
 	* \author Peter Krusche
 	* \date October 2010
 	*/
-	template <class input_t, class operator_t, size_t bpc>
+	template <class input_t, class operator_t>
 	class dp_matrix_integer_solver {
 	public:
 		dp_matrix_integer_solver() {
-			cur_top_row = &top_dp_row;
-			cur_left_col = &left_dp_column;
+			left_dp_column = NULL;
+			top_dp_row = NULL;
+			tmp_dp = NULL;
+			tmp_size = 0;
+			left_col_size = 0;
+			top_row_size = 0;
+			cur_top_row = top_dp_row;
+			cur_left_col = left_dp_column;
 			prev_top_row = cur_top_row;
 			prev_left_col = cur_left_col;
 		}
+		
+		~dp_matrix_integer_solver() {
+			if(left_dp_column != NULL) {
+				alloc.deallocate(left_dp_column, 0);
+			}
+			if(top_dp_row != NULL) {
+				alloc.deallocate(top_dp_row, 0);
+			}
+			if(tmp_dp != NULL) {
+				alloc.deallocate(tmp_dp, 0);
+			}
+		}
 
-		utilities::IntegerVector<bpc> * cur_top_row;
-		utilities::IntegerVector<bpc> * prev_top_row;
-		utilities::IntegerVector<bpc> * cur_left_col;
-		utilities::IntegerVector<bpc> * prev_left_col;
+		int * cur_top_row;
+		int * prev_top_row;
+		int * cur_left_col;
+		int * prev_left_col;
 
 	private:
 		/*!
 		* The row and column containing the initial values of the current block
 		*/
-		utilities::IntegerVector<bpc> left_dp_column;
-		utilities::IntegerVector<bpc> top_dp_row;
+		int * left_dp_column;
+		int * top_dp_row;
+		int * tmp_dp;
 
-		utilities::IntegerVector<bpc> tmp_dp;
+		size_t left_col_size;
+		size_t top_row_size;
+		size_t tmp_size;
 
 		/*!
 		* the operator. 
 		*/
 		operator_t op;
 
+		utilities::aligned_allocator<int> alloc;
+
 	public:
+		void init_left(size_t size, int value) {
+			if(left_col_size < size) {
+				if(left_dp_column != NULL)
+					 alloc.deallocate(left_dp_column, 0);
+				left_dp_column = alloc.allocate(size);
+				left_col_size = size;
+				memset(left_dp_column, value, sizeof(int)*size);
+			}
+		}
+		
+		void init_top(size_t size, int value) {
+			if(top_row_size < size) {
+				if(top_dp_row != NULL)
+					 alloc.deallocate(top_dp_row, 0);
+				top_dp_row = alloc.allocate(size);
+				top_row_size = size;
+				memset(top_dp_row, value, sizeof(int)*size);
+			}
+		}
+
+		void init_tmp(size_t size, int value) {
+			if(tmp_size < size) {
+				if(tmp_dp != NULL)
+					 alloc.deallocate(tmp_dp, 0);
+				tmp_dp = alloc.allocate(size);
+				tmp_size = size;
+				memset(tmp_dp, value, sizeof(int)*size);
+			}
+		}
+		
 		UINT64 operator() (input_t left_input, input_t top_input) {
 			size_t m = left_input.size();
 			size_t n = top_input.size();
+			int* tmp;
 
-			if(left_dp_column.size() < m+1) {
-				left_dp_column.resize(m+1);
-			}
+			init_left(m+1, 0);
+			init_top(n+1, 0);
+			init_tmp(n+1, 0);
 
-			if(top_dp_row.size() < n+1) {
-				top_dp_row.resize(n+1);
-			}
-
-			register UINT64 last;
-
-			if(tmp_dp.size() < top_dp_row.size()) {
-				tmp_dp.resize(top_dp_row.size());
-			}
-			prev_top_row = &top_dp_row;
-			cur_top_row = &tmp_dp;
+			cur_left_col = left_dp_column;
+			prev_top_row = top_dp_row;
+			cur_top_row = tmp_dp;
 
 			for (register size_t i = 1; i <= m; ++i) {
-				last = (*cur_left_col)[i];
+				cur_top_row[0]= cur_left_col[i];
 				for (register size_t j = 1; j <= n; ++j) {
-					last = op(i, j, left_input[i-1], top_input[j-1], last, (*prev_top_row)[j-1], (*prev_top_row)[j]);
-					(*cur_top_row)[j] = last;
+					cur_top_row[j] = op(i, j, left_input[i-1], top_input[j-1], cur_top_row[j-1], prev_top_row[j-1], prev_top_row[j]);
 				}
-				swap(cur_top_row, prev_top_row);
-				(*cur_left_col)[i] = last;
+				tmp = cur_top_row;
+				cur_top_row = prev_top_row;
+				prev_top_row = tmp;
+//				swap(cur_top_row, prev_top_row);
+				cur_left_col[i] = cur_top_row[n];
 			}
-			return last;
+			return cur_left_col[m];
 		}
 	};
 };
