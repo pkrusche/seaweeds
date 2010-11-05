@@ -248,6 +248,9 @@ if string.find(cxx, 'g++') >= 0 or string.find(cxx, 'c++') >= 0 or root['toolset
 		
 	print "using g++"
 elif root['toolset'] == 'icc' and platform_name != 'win32':
+	root.Append(
+		CCFLAGS=' -fasm-blocks',
+	)
 	if mode == 'debug':
 		as_debugformat = 'dwarf2'
 		if subarch == 'x86_64':
