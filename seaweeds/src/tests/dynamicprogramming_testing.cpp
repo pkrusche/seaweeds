@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
 	init_xasmlib();
 	int testsize = 10000;
 
-	string s1, s2;
+	IntegerVector<8> s1, s2;
 	s1.resize(testsize);
 	s2.resize(testsize);
 	for (size_t j = 0; j < testsize; ++j) {
@@ -48,12 +48,12 @@ int main(int argc, const char * argv[]) {
 		s2[j] = rand() % 256;
 	}
 
-	dp_matrix_solver<string, int, dp_lcs_op> solver;
+	dp_matrix_solver<IntegerVector<8>, int, dp_lcs_op> solver;
 	
 	solver.cur_left_col->resize(testsize+1, 0);
 	solver.cur_top_row->resize(testsize+1, 0);
 
-	lcs::Llcs< string > _lcs_std;
+	lcs::Llcs< IntegerVector<8> > _lcs_std;
 
 	cout << "Using DP solver. " << endl;
 
