@@ -13,6 +13,7 @@
 #include "xasmlib/IntegerVector.h"
 #include "bspcpp/tools/utilities.h"
 #include "dynamicprogramming/dp_matrix.h"
+#include "dynamicprogramming/dp_matrix_integer.h"
 
 #include "lcs/Llcs.h"
 #include "lcs/LlcsCIPR.h"
@@ -30,7 +31,17 @@ public:
 		int ttop_left,
 		int ttop
 	) {
+#ifdef _WIN32
+		char character_score;
+
+		__asm mov dl, left
+		__asm mov cl, top
+		__asm cmp cl, dl
+		__asm sete character_score
+#else
 		int character_score = ((char)top) == ((char)left) ? 1 : 0;
+#endif
+
 		return max (tleft, max(ttop, ttop_left + character_score));
 //		cout << "D(" << i << ", " << j << ") = " << tcurrent << "\t (c_i = " << left << ", c_j = " << top << ")" << endl;
 	}
@@ -49,9 +60,14 @@ int main(int argc, const char * argv[]) {
 	}
 
 	dp_matrix_solver<IntegerVector<8>, int, dp_lcs_op> solver;
+	dp_matrix_integer_solver<IntegerVector<8>, dp_lcs_op, 64> intsolver;
 	
 	solver.cur_left_col->resize(testsize+1, 0);
 	solver.cur_top_row->resize(testsize+1, 0);
+	intsolver.cur_left_col->resize(testsize+1);
+	intsolver.cur_top_row->resize(testsize+1);
+	intsolver.cur_left_col->zero();
+	intsolver.cur_top_row->zero();
 
 	lcs::Llcs< IntegerVector<8> > _lcs_std;
 
@@ -61,14 +77,21 @@ int main(int argc, const char * argv[]) {
 	int solver_score = solver(s1, s2);
 	double t1 = time();
 	cout << "Time: " << t1 - t0 << endl << endl;
-		
+
+	cout << "Using int DP solver. " << endl;
+
+	t0 = time();
+	int intsolver_score = intsolver(s1, s2);
+	t1 = time();
+	cout << "Time: " << t1 - t0 << endl << endl;
+
 	cout << "Using standard LCS. " << endl;
 	t0 = time();
 	int std_score = _lcs_std(s1, s2);
 	t1 = time();
 	cout << "Time: " << t1 - t0 << endl << endl;
 
-	cout << solver_score << " " << std_score << endl;
+	cout << solver_score << " " << intsolver_score << " " << std_score << endl;
 
 	return 0;
 }
