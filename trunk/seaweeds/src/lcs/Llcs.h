@@ -47,9 +47,7 @@ public:
             for (size_t j = 1; j <= al; ++j) {
                 if (_a[j - 1] == _b[i - 1]) {
                     pcl[j] = ppl[j - 1] + 1;
-                }
-
-                else {
+                } else {
                     pcl[j] = max (ppl[j], pcl[j - 1]);
                 }
             }
