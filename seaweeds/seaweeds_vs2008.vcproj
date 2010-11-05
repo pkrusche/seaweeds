@@ -86,9 +86,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="scons -Q mode=release sequential=1 $(TargetPath)"
-				ReBuildCommandLine="scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1"
-				CleanCommandLine="scons -Q mode=release sequential=1 -c"
+				BuildCommandLine="&quot;c:\Program Files (x86)\Intel\Parallel Studio 2011\Composer\bin\compilervars_arch.bat&quot; ia32_intel64 &amp;&amp; scons -Q mode=release sequential=1 $(TargetPath)"
+				ReBuildCommandLine="&quot;c:\Program Files (x86)\Intel\Parallel Studio 2011\Composer\bin\compilervars_arch.bat&quot; ia32_intel64 &amp;&amp; scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1"
+				CleanCommandLine="&quot;c:\Program Files (x86)\Intel\Parallel Studio 2011\Composer\bin\compilervars_arch.bat&quot; ia32_intel64 &amp;&amp; scons -Q mode=release sequential=1 -c"
 				Output="bin\dynamicprogramming_testing_win32_default_release.exe"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				IncludeSearchPath="src"
@@ -268,11 +268,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\scorematrix.h"
+				RelativePath=".\src\seaweeds\ScoreMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\ScoreMatrix.h"
+				RelativePath=".\src\windowlocal\scorematrix.h"
 				>
 			</File>
 			<File
@@ -280,11 +280,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\windowlocal\seaweeds.h"
+				RelativePath=".\src\seaweeds\Seaweeds.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\seaweeds\Seaweeds.h"
+				RelativePath=".\src\windowlocal\seaweeds.h"
 				>
 			</File>
 			<File
@@ -531,6 +531,10 @@
 				RelativePath=".\My Amplifier Results\r002hs\r002hs.ampl"
 				>
 			</File>
+			<File
+				RelativePath=".\My Amplifier Results\r003hs\r003hs.ampl"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="My Inspector Results"
@@ -541,11 +545,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 	</Files>
