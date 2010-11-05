@@ -60,14 +60,10 @@ int main(int argc, const char * argv[]) {
 	}
 
 	dp_matrix_solver<IntegerVector<8>, int, dp_lcs_op> solver;
-	dp_matrix_integer_solver<IntegerVector<8>, dp_lcs_op, 64> intsolver;
+	dp_matrix_integer_solver<IntegerVector<8>, dp_lcs_op> intsolver;
 	
 	solver.cur_left_col->resize(testsize+1, 0);
 	solver.cur_top_row->resize(testsize+1, 0);
-	intsolver.cur_left_col->resize(testsize+1);
-	intsolver.cur_top_row->resize(testsize+1);
-	intsolver.cur_left_col->zero();
-	intsolver.cur_top_row->zero();
 
 	lcs::Llcs< IntegerVector<8> > _lcs_std;
 
