@@ -31,6 +31,7 @@ public:
 		int ttop_left,
 		int ttop
 	) {
+/*
 #ifdef _WIN32
 		char character_score;
 
@@ -43,6 +44,13 @@ public:
 #endif
 
 		return max (tleft, max(ttop, ttop_left + character_score));
+*/
+		if(top == left) {
+			return ttop_left + 1;
+		} else {
+			return max(tleft, ttop);
+		}
+
 //		cout << "D(" << i << ", " << j << ") = " << tcurrent << "\t (c_i = " << left << ", c_j = " << top << ")" << endl;
 	}
 };
