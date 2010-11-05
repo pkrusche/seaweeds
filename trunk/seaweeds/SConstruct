@@ -83,8 +83,10 @@ if int(readopts['benchmarks']):
 # add qt4 here if necessary
 platform_name = platform.uname()[0]
 if platform_name == 'Windows':
-	ttools = ['msvc', 'mslib', 'mslink', 'nasm', 'doxygen']
-#	ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
+	if readopts['toolset'] == 'gcc':
+		ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
+	else:
+		ttools = ['msvc', 'mslib', 'mslink', 'nasm', 'doxygen']
 elif platform_name == 'Linux':
 	ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
 else:
@@ -162,7 +164,7 @@ if platform_name == 'win32':
     
     # boost include path must go into CCFLAGS because the scons include dependency
     # parser can die otherwise
-    if cxx != 'g++':
+    if cxx != 'g++' and readopts['toolset'] != 'gcc':
 		root.Append(
 			CCFLAGS = ' /D_SCL_SECURE_NO_WARNINGS /Isrc /I'+boost_include ,
 			LIBPATH = [ boost_lib ],
@@ -253,7 +255,7 @@ else:
 			)
 		elif mode == 'release':
 			root.Append( 
-			CCFLAGS='/MD /O2 /GL '+msvc_ccflags,
+			CCFLAGS='/MD '+msvc_ccflags,
 			LINKFLAGS=msvc_linkflags
 			)
 			if debuginfo or profile:
@@ -290,10 +292,16 @@ if int(root['use_yasm']):
 	root.Replace(AS = 'yasm')
 	
 if platform_name == 'win32':
-	if subarch == 'AMD64':
-	    root.Append(ASFLAGS = " -f win64 ")
+	if readopts['toolset'] != 'gcc':
+		if subarch == 'AMD64':
+			root.Append(ASFLAGS = " -f win64 ")
+		else:
+			root.Append(ASFLAGS = " -f win32 ")
 	else:
-	    root.Append(ASFLAGS = " -f win32 ")
+		if subarch == 'AMD64':
+			root.Append(ASFLAGS = " -f coff ")
+		else:
+			root.Append(ASFLAGS = " -f coff ")		
 	
 	if mode == 'debug' or profile:
 		root.Append(ASFLAGS = " -g cv8")
@@ -403,7 +411,7 @@ if root['configure'] != 0:
 
 #ifdef _MSC_VER
 // Turn off global optimizations in MSVC, they FUCK THINGS UP!
-#pragma optimize("g",off)
+//#pragma optimize("g",off)
 
 #else
 #define __cdecl

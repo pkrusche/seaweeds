@@ -25,13 +25,12 @@ namespace dynamic_programming {
 	 *        size_t size() returning the size of the input
 	 *   dp_element_t -- type of dp matrix elements 
 	 *   operator_t -- dp operator
-	 *        operator() (size_t i, size_t j,
+	 *        dp_element_t operator() (size_t i, size_t j,
 	 *                    input_t :: element_type top, 
 	 *                    input_t :: element_type left,
 	 *                    dp_element_t const & left,
 	 *                    dp_element_t const & top_left,
-	 *                    dp_element_t const & top, 
-	 *                    dp_element_t & current
+	 *                    dp_element_t const & top,
 	 *        )
 	 * 
 	 * \author Peter Krusche
@@ -79,7 +78,7 @@ namespace dynamic_programming {
 				top_dp_row.resize(n+1);
 			}
 			
-			dp_element_t last;
+			register dp_element_t last;
 
 			if(tmp_dp.size() < top_dp_row.size()) {
 				tmp_dp.resize(top_dp_row.size());
@@ -87,11 +86,10 @@ namespace dynamic_programming {
 			prev_top_row = &top_dp_row;
 			cur_top_row = &tmp_dp;
 		
-			for (size_t i = 1; i <= m; ++i) {
+			for (register size_t i = 1; i <= m; ++i) {
 				last = (*cur_left_col)[i];
-				for (size_t j = 1; j <= n; ++j) {
-					dp_element_t left_copy = last;
-					op(i, j, left_input[i-1], top_input[j-1], left_copy, (*prev_top_row)[j-1], (*prev_top_row)[j], last);
+				for (register size_t j = 1; j <= n; ++j) {
+					last = op(i, j, left_input[i-1], top_input[j-1], last, (*prev_top_row)[j-1], (*prev_top_row)[j]);
 					(*cur_top_row)[j] = last;
 				}
 				swap(cur_top_row, prev_top_row);
