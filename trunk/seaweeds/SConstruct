@@ -85,6 +85,8 @@ platform_name = platform.uname()[0]
 if platform_name == 'Windows':
 	if readopts['toolset'] == 'gcc':
 		ttools = ['gnulink', 'nasm', 'gcc', 'g++', 'ar', 'doxygen']
+	elif readopts['toolset'] == 'icc':
+		ttools = ['msvc', 'mslib', 'mslink', 'nasm', 'intelc', 'doxygen']
 	else:
 		ttools = ['msvc', 'mslib', 'mslink', 'nasm', 'doxygen']
 elif platform_name == 'Linux':
@@ -275,7 +277,26 @@ elif root['toolset'] == 'icc' and platform_name != 'win32':
 			CCFLAGS=' -O3 -fast -ipo',
 			)
 		
-	print "using icc"
+	print "using icc on linux"
+elif root['toolset'] == 'icc':
+	msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
+	msvc_linkflags = " /DEBUG"
+	if mode == 'debug':
+		root.Append(
+		CCFLAGS='/MDd /Od /Zi /W3 /RTC1 /RTCu /RTCs'+msvc_ccflags,
+		LINKFLAGS='/DEBUG '+msvc_linkflags,
+		)
+	elif mode == 'release':
+		root.Append( 
+			CCFLAGS='/MD /GL /O3 /Qipo /fast ' + msvc_ccflags,
+			LINKFLAGS=msvc_linkflags
+		)
+		if debuginfo or profile:
+			root.Append(
+				CCFLAGS=' /Zi ',
+				LINKFLAGS=' /DEBUG '
+			)							
+	print "using Intel C++ on Windows"
 elif platform_name == 'win32':
 	msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
 	msvc_linkflags = " /DEBUG"
@@ -286,8 +307,8 @@ elif platform_name == 'win32':
 		)
 	elif mode == 'release':
 		root.Append( 
-		CCFLAGS='/MD '+msvc_ccflags,
-		LINKFLAGS=msvc_linkflags
+			CCFLAGS='/MD /O2 /GL '+msvc_ccflags,
+			LINKFLAGS=msvc_linkflags
 		)
 		if debuginfo or profile:
 			root.Append(
