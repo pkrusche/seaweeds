@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>scons -Q mode=debug sequential=1</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -Q mode=debug sequential=1 -c</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>scons -Q mode=debug sequential=1 -c &amp;&amp; scons -Q mode=debug sequential=1</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>scons -Q mode=release sequential=1</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -Q mode=release sequential=1 -c</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>scons -Q mode=release sequential=1 -c &amp;&amp; scons -Q mode=release sequential=1</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include=".sconf_temp\conftest_0.cpp" />
+    <ClCompile Include=".sconf_temp\conftest_1.cpp" />
+    <ClCompile Include="src\bspcpp\CommandLine.cpp" />
+    <ClCompile Include="src\bspcpp\ParameterFile.cpp" />
+    <ClCompile Include="src\bspcpp\singletons.cpp" />
+    <ClCompile Include="src\bspcpp\timing.cpp" />
+    <ClCompile Include="src\gpulib\seaweeds.cpp" />
+    <ClCompile Include="src\gpulib\seaweeds_gpu.cpp" />
+    <ClCompile Include="src\PostprocessWindows.cpp" />
+    <ClCompile Include="src\tests\bspcomputation.cpp" />
+    <ClCompile Include="src\tests\dynamicprogramming_testing.cpp" />
+    <ClCompile Include="src\tests\gpulibtesting.cpp" />
+    <ClCompile Include="src\tests\lcstesting.cpp" />
+    <ClCompile Include="src\tests\mwwtesting.cpp" />
+    <ClCompile Include="src\tests\parameterfiletest.cpp" />
+    <ClCompile Include="src\tests\rangecomparison.cpp" />
+    <ClCompile Include="src\tests\rangecomparison2d.cpp" />
+    <ClCompile Include="src\tests\rangetesting.cpp" />
+    <ClCompile Include="src\tests\seaweedtesting.cpp" />
+    <ClCompile Include="src\tests\timer.cpp" />
+    <ClCompile Include="src\tests\windowlocalcomparison.cpp" />
+    <ClCompile Include="src\tests\windowlocaltesting.cpp" />
+    <ClCompile Include="src\tuning\rangetuning.cpp" />
+    <ClCompile Include="src\WindowAlignment_BSP.cpp" />
+    <ClCompile Include="src\xasmlib\xasmlib.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="debug\BuildLog.htm" />
+    <None Include="IcUpdateLog.htm" />
+    <None Include="release\BuildLog.htm" />
+    <None Include="src\xasmlib\machineword_AMD64.asm" />
+    <None Include="src\xasmlib\machineword_AMD64_sse2.asm" />
+    <None Include="src\xasmlib\machineword_x86.asm" />
+    <None Include="src\xasmlib\machineword_x86_64.asm" />
+    <None Include="src\xasmlib\machineword_x86_64_mmx.asm" />
+    <None Include="src\xasmlib\machineword_x86_64_nommx.asm" />
+    <None Include="src\xasmlib\machineword_x86_64_sse2.asm" />
+    <None Include="src\xasmlib\machineword_x86_mmx.asm" />
+    <None Include="src\xasmlib\machineword_x86_nommx.asm" />
+    <None Include="src\xasmlib\machineword_x86_sse2.asm" />
+    <None Include="x64\release\BuildLog.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="my inspector results\r001mi2\source_cache\temporary_files\cache_371ea09d2643df91c86be245cf7d1c1c_avector.h" />
+    <ClInclude Include="my inspector results\r001mi2\source_cache\temporary_files\cache_5cdd85934478c80b70f215b49d0af2b4_aligned_allocator.h" />
+    <ClInclude Include="src\alignment\NWAlignment.h" />
+    <ClInclude Include="src\autoconfig.h" />
+    <ClInclude Include="src\bspcpp\Avector.h" />
+    <ClInclude Include="src\bspcpp\bsp_cpp.h" />
+    <ClInclude Include="src\bspcpp\CommandLine.h" />
+    <ClInclude Include="src\bspcpp\Computation.h" />
+    <ClInclude Include="src\bspcpp\ParameterFile.h" />
+    <ClInclude Include="src\bspcpp\Permutation.h" />
+    <ClInclude Include="src\bspcpp\ProcMapper.h" />
+    <ClInclude Include="src\bspcpp\Superstep.h" />
+    <ClInclude Include="src\bspcpp\tools\aligned_allocator.h" />
+    <ClInclude Include="src\bspcpp\tools\singletons.h" />
+    <ClInclude Include="src\bspcpp\tools\spawn.h" />
+    <ClInclude Include="src\bspcpp\tools\utilities.h" />
+    <ClInclude Include="src\checkpoint\checkpoint.h" />
+    <ClInclude Include="src\datamodel\sequence.h" />
+    <ClInclude Include="src\dynamicprogramming\dp_matrix.h" />
+    <ClInclude Include="src\dynamicprogramming\dp_matrix_integer.h" />
+    <ClInclude Include="src\gpulib\ATI_Gpulib.h" />
+    <ClInclude Include="src\gpulib\seaweeds_gpu.h" />
+    <ClInclude Include="src\gpulib\seaweeds_gpu_gpu.h" />
+    <ClInclude Include="src\lcs\Llcs.h" />
+    <ClInclude Include="src\lcs\LlcsCIPR.h" />
+    <ClInclude Include="src\lcs\RationalScores.h" />
+    <ClInclude Include="src\matrix\PermutationMatrix.h" />
+    <ClInclude Include="src\rangesearching\BinTree.h" />
+    <ClInclude Include="src\rangesearching\IRange.h" />
+    <ClInclude Include="src\rangesearching\Range2D.h" />
+    <ClInclude Include="src\rangesearching\RangeBenchmark.h" />
+    <ClInclude Include="src\rangesearching\RangeBenchmark2D.h" />
+    <ClInclude Include="src\rangesearching\RangeList.h" />
+    <ClInclude Include="src\rangesearching\RangeTest.h" />
+    <ClInclude Include="src\rangesearching\RangeTest2D.h" />
+    <ClInclude Include="src\rangesearching\RangeTree.h" />
+    <ClInclude Include="src\seaweeds\defs.h" />
+    <ClInclude Include="src\seaweeds\MultiSeaweeds.h" />
+    <ClInclude Include="src\seaweeds\ScoreMatrix.h" />
+    <ClInclude Include="src\seaweeds\Seaweeds.h" />
+    <ClInclude Include="src\seaweeds\sm_ExplicitStorage.h" />
+    <ClInclude Include="src\seaweeds\sm_ImplicitStorage.h" />
+    <ClInclude Include="src\tests\Testing.h" />
+    <ClInclude Include="src\tuning\Timing.h" />
+    <ClInclude Include="src\tuning\Tuning.h" />
+    <ClInclude Include="src\util\rs_container.h" />
+    <ClInclude Include="src\util\TypeList.h" />
+    <ClInclude Include="src\windowlocal\boasson.h" />
+    <ClInclude Include="src\windowlocal\naive.h" />
+    <ClInclude Include="src\windowlocal\naive_cipr.h" />
+    <ClInclude Include="src\windowlocal\report.h" />
+    <ClInclude Include="src\windowlocal\scorematrix.h" />
+    <ClInclude Include="src\windowlocal\seaweeds.h" />
+    <ClInclude Include="src\windowwindow\alignmentplotcomputation.h" />
+    <ClInclude Include="src\windowwindow\postprocesswindows.h" />
+    <ClInclude Include="src\windowwindow\seaweedoverlap.h" />
+    <ClInclude Include="src\windowwindow\splitwindowwindowlcs.h" />
+    <ClInclude Include="src\windowwindow\translate_and_print.h" />
+    <ClInclude Include="src\windowwindow\windowwindowlcs.h" />
+    <ClInclude Include="src\xasmlib\CharMapping.h" />
+    <ClInclude Include="src\xasmlib\functors.h" />
+    <ClInclude Include="src\xasmlib\IntegerVector.h" />
+    <ClInclude Include="src\xasmlib\IntegerVectorFixed.h" />
+    <ClInclude Include="src\xasmlib\Queue.h" />
+    <ClInclude Include="src\xasmlib\xasmlib.h" />
+    <ClInclude Include="tuning_config.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
