@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="My Amplifier Results">
+      <UniqueIdentifier>{7715aa9e-6cab-4936-8119-db6601875e77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".sconf_temp\conftest_0.cpp">
@@ -125,6 +128,23 @@
     <None Include="src\xasmlib\machineword_x86_sse2.asm">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="My Amplifier Results\r005hs\r005hs.ampl">
+      <Filter>My Amplifier Results</Filter>
+    </None>
+    <None Include="src\SConscript" />
+    <None Include="opts.py" />
+    <None Include="SConstruct" />
+    <None Include="src\tests\test.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\tests\test_sw_seq.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\tests\test.sh" />
+    <None Include="src\tests\test_sw.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\tests\SConscript" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tuning_config.h">

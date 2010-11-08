@@ -78,6 +78,7 @@
     <NMakeReBuildCommandLine>scons -Q mode=release -c &amp;&amp; scons -Q mode=release</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>src; C:\Boost\include\boost-1_44\</NMakeIncludeSearchPath>
+    <NMakeOutput>bin\dynamicprogramming_testing_win32_default_release.exe</NMakeOutput>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -110,6 +111,15 @@
     <ClCompile Include="src\xasmlib\xasmlib.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Amplifier Results\r005hs\r005hs.ampl" />
+    <None Include="opts.py" />
+    <None Include="SConstruct" />
+    <None Include="src\SConscript" />
+    <None Include="src\tests\SConscript" />
+    <None Include="src\tests\test.bat" />
+    <None Include="src\tests\test.sh" />
+    <None Include="src\tests\test_sw.bat" />
+    <None Include="src\tests\test_sw_seq.bat" />
     <None Include="src\xasmlib\machineword_AMD64.asm" />
     <None Include="src\xasmlib\machineword_AMD64_sse2.asm" />
     <None Include="src\xasmlib\machineword_x86.asm" />
