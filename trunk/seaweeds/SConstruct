@@ -179,12 +179,12 @@ if platform_name == 'win32':
 		if subarch == 'AMD64':
 			root.Append(
 				ARFLAGS = '/MACHINE:X64',
-				LINKFLAGS = '/MACHINE:X64',
+				LINKFLAGS = '/MACHINE:X64 /LTCG /LARGEADDRESSAWARE:NO',
 			)
 		else:
 			root.Append(
 				ARFLAGS = '/MACHINE:X86',
-				LINKFLAGS = '/MACHINE:X86',
+				LINKFLAGS = '/MACHINE:X86 /LARGEADDRESSAWARE:NO',
 			)
 
     else:
@@ -280,16 +280,14 @@ elif root['toolset'] == 'icc' and platform_name != 'win32':
 	print "using icc on linux"
 elif root['toolset'] == 'icc':
 	msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
-	msvc_linkflags = " /DEBUG"
 	if mode == 'debug':
 		root.Append(
 		CCFLAGS='/MDd /Od /Zi /W3 /RTC1 /RTCu /RTCs'+msvc_ccflags,
-		LINKFLAGS='/DEBUG '+msvc_linkflags,
+		LINKFLAGS='/DEBUG '
 		)
 	elif mode == 'release':
 		root.Append( 
 			CCFLAGS='/MD /GL /O3 /Qipo /fast ' + msvc_ccflags,
-			LINKFLAGS=msvc_linkflags
 		)
 		if debuginfo or profile:
 			root.Append(
@@ -299,16 +297,15 @@ elif root['toolset'] == 'icc':
 	print "using Intel C++ on Windows"
 elif platform_name == 'win32':
 	msvc_ccflags =  " /EHsc /nologo /wd4099 /D_CRT_SECURE_NO_DEPRECATE /WL /Zi"
-	msvc_linkflags = " /DEBUG"
+	
 	if mode == 'debug':
 		root.Append(
 		CCFLAGS='/MDd /Od /Zi /W3 /RTC1 /RTCu /RTCs'+msvc_ccflags,
-		LINKFLAGS='/DEBUG '+msvc_linkflags,
+		LINKFLAGS='/DEBUG ',
 		)
 	elif mode == 'release':
 		root.Append( 
 			CCFLAGS='/MD /O2 /GL '+msvc_ccflags,
-			LINKFLAGS=msvc_linkflags
 		)
 		if debuginfo or profile:
 			root.Append(

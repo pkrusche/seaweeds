@@ -5,29 +5,45 @@
 #ifndef __NWALIGNMENT_H__
 #define __NWALIGNMENT_H__
 
+#include <string>
+#include <algorithm>
+
+#include "../dynamicprogramming/dp_matrix.h"
+
 namespace alignment {
 
-template <class _string = std::string, typename _score=int>
-class NWAlignment {
-	_score operator() (_string x, _string y,
-			_score * rightline,
-			_score * bottomline) {
-		size_t m = x.size();
-		size_t n = y.size();
-		if( rightline == NULL ) {
-			rightline = new score [m+1];
-			memset(rightline, 0, sizeof(score)*(x.size()+1));
-		}
-		if(bottomline == NULL) {
-			rightline = new score [n+1];
-			memset(bottomline, 0, sizeof(score)*(y.size()+1));
-		}
+class defaultscoring_op {
+public:
+	typedef double score_t ;
+	typedef int dp_element_t;
 
-		for(size_t j = 0; j < n; ++j) {
-			for(size_t i = 0; i < m; ++i) {
-				
-			}
+	inline int operator() (size_t i, size_t j,
+		char top, 
+		char left,
+		int tleft,
+		int ttop_left,
+		int ttop
+	) {
+		if(top == left) {
+			return ttop_left + 1;
+		} else {
+			return std::max(tleft, ttop);
 		}
+	}
+
+	double convert_score(int result_score, size_t m, size_t n) {
+		return result_score/2.0;
+	}
+};
+
+	
+template <class _string = std::string, typename _op = defaultscoring_op>
+class NWAlignment : public dp_matrix_solver<std::string, typename _op :: score_t, defaultscoring_op> {
+	typedef  typename _op :: score_t score_t;
+	typedef  typename _op :: dp_element_t dp_element_t;
+
+	score_t operator() (input_t left_input, input_t top_input) {
+
 	}
 };
 

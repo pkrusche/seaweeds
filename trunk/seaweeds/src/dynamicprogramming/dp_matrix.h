@@ -10,6 +10,8 @@
 
 namespace dynamic_programming {
 
+#pragma optimize("g",on)
+
 	/*!
 	 * \class dp_matrix_rowmajor_solver
 	 *
@@ -99,6 +101,8 @@ namespace dynamic_programming {
 		}
 	};
 };
+
+#pragma optimize("g",off)
 
 #endif
 
