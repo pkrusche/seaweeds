@@ -8,6 +8,38 @@
 
 
 namespace lcs {
+
+template <class _string>
+class NoTranslation {
+public:
+	typedef _string string;
+
+	static const string & translate(string const & input) {
+		return input;
+	}
+	
+	static double translatescore(size_t , size_t , double score) {
+		return score;
+	}
+	
+	static double translatescore_fwd(size_t m, size_t n, double score) {
+		return score;
+	}
+
+	static size_t translatecoord_fwd(size_t coord) {
+		return coord;
+	}
+
+	static size_t translatecoord_bk(size_t coord) {
+		return coord;
+	}
+
+
+	static bool validcoord(size_t coord) {
+		return true;
+	}
+};
+
 /**
  * \date 02-04-2009
  *

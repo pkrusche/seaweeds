@@ -8,7 +8,7 @@
 #include <string>
 #include <algorithm>
 
-#include "../dynamicprogramming/dp_matrix.h"
+#include "dynamicprogramming/dp_matrix.h"
 
 namespace alignment {
 
@@ -17,6 +17,8 @@ public:
 	typedef double score_t ;
 	typedef int dp_element_t;
 
+
+
 	inline int operator() (size_t i, size_t j,
 		char top, 
 		char left,
@@ -24,10 +26,11 @@ public:
 		int ttop_left,
 		int ttop
 	) {
+		using namespace std;
 		if(top == left) {
 			return ttop_left + 1;
 		} else {
-			return std::max(tleft, ttop);
+			return max(tleft, ttop);
 		}
 	}
 
@@ -37,13 +40,20 @@ public:
 };
 
 	
-template <class _string = std::string, typename _op = defaultscoring_op>
-class NWAlignment : public dp_matrix_solver<std::string, typename _op :: score_t, defaultscoring_op> {
+template <class _string = std::string, class _op = defaultscoring_op>
+class NWAlignment : public dynamic_programming::dp_matrix_solver<_string, typename _op::score_t, _op> {
+public:
 	typedef  typename _op :: score_t score_t;
 	typedef  typename _op :: dp_element_t dp_element_t;
 
-	score_t operator() (input_t left_input, input_t top_input) {
+	_op scoring;
 
+	score_t operator() (_string left_input, _string top_input) {
+		return scoring.convert_score(
+			((dp_matrix_solver<_string, typename _op :: score_t, _op>)*this)(left_input, top_input),
+			left_input.size(),
+			top_input.size()
+		);
 	}
 };
 

@@ -10,6 +10,8 @@
 #include "lcs/LlcsCIPR.h"
 #include "lcs/RationalScores.h"
 
+#include "alignment/NWAlignment.h"
+
 #include "windowwindow/windowwindowlcs.h"
 #include "windowwindow/seaweedoverlap.h"
 #include "windowwindow/translate_and_print.h"
@@ -30,6 +32,7 @@ namespace windowlocal {
 			SEAWEEDS,
 			SCORES,
 			SCORESOVERLAP,
+			NEEDLEMAN_WUNSCH
 		} method_t;
 
 		AlignmentPlotComputation() : 
@@ -190,6 +193,8 @@ namespace windowlocal {
 				method = SCORES;
 			} else if(method_s == "scoresoverlap") {
 				method = SCORESOVERLAP;
+			} else if(method_s == "needlemanwunsch") {
+				method = NEEDLEMAN_WUNSCH;
 			} else {
 				cout << "ERROR: Unknown method: " << method_s << endl;
 				return false;
@@ -230,9 +235,19 @@ namespace windowlocal {
 			translatestring(a, legalchars_a);
 			translatestring(b, legalchars_b);
 
-			a = ScoreTranslation<string>::translate(a);
-			b = ScoreTranslation<string>::translate(b);
-			input_is_preprocessed = true;
+			method_t method;
+
+			// We need to blow up the input strings for all
+			// algorithms that compute alignment scores by
+			// LCS
+			int m = (int) SEAWEEDS; 
+			pf.get("method", m, m);
+			method = (method_t)m;
+			if(method != NEEDLEMAN_WUNSCH) {
+				a = ScoreTranslation<string>::translate(a);
+				b = ScoreTranslation<string>::translate(b);
+				input_is_preprocessed = true;
+			}
 		}
 
 		utilities::Checkpointable * generate_matcher() {
@@ -272,6 +287,21 @@ namespace windowlocal {
 				);
 				  }
 				  break;
+		case NEEDLEMAN_WUNSCH: {
+			//  This is a naive matcher using standard LCS score computation
+			//  Running time is O(m n w^2)
+			_a = IntegerVector<BPC>(a.c_str()),
+			_b = IntegerVector<BPC>(b.c_str());
+			NaiveWindowWindowMatcherGenerator<IntegerVector<BPC>, alignment::NWAlignment< IntegerVector<BPC> > > matcher;
+			computation = matcher(_a, _b,
+				windowlength,
+				(size_t)cutoffthreshold,
+				firststepwidth,
+				secondstepwidth,
+				tp
+				);
+				}
+				break;
 		case BLCS:
 			{
 				_a = IntegerVector<BPC>(a.c_str()),
@@ -423,11 +453,24 @@ namespace windowlocal {
 			pf.get("full-output", full_output, full_output);
 			pf.get("max_windowpairs", max_windowpairs, max_windowpairs);
 
+			int m = (int) SEAWEEDS; 
+			pf.get("method", m, m);
+			method_t method = (method_t)m;
 			if(full_output) {
-				tp = new translate_and_print<string>(*output, winlen, winlen, cutoffthreshold, 
-					get_profile_size_a(), 
-					get_profile_size_b(), 
-					firststepwidth, secondstepwidth);
+				// We need to blow up the input strings for all
+				// algorithms that compute alignment scores by
+				// LCS
+				if(method != NEEDLEMAN_WUNSCH) {
+					tp = new translate_and_print_unbuffered<string>(*output, winlen, winlen, cutoffthreshold, 
+						get_profile_size_a(), 
+						get_profile_size_b(), 
+						firststepwidth, secondstepwidth);
+				} else {
+					tp = new translate_and_print_unbuffered<string, lcs::NoTranslation<string> >(*output, winlen, winlen, cutoffthreshold, 
+						get_profile_size_a(), 
+						get_profile_size_b(), 
+						firststepwidth, secondstepwidth);
+				}
 			} else {
 				// This is the formula from the original window alignment code.
 				// We return at least 3000 window pairs, and we expect an additional
@@ -438,12 +481,21 @@ namespace windowlocal {
 					buffersize = max_windowpairs;
 				}
 				std::cout << "Window buffer size is " << buffersize << std::endl;
-				tp = new translate_and_print_with_buffer<string>(*output, 
-					buffersize,
-					winlen, winlen, cutoffthreshold, 
-					get_profile_size_a(), 
-					get_profile_size_b(), 
-					firststepwidth, secondstepwidth);
+				if(method != NEEDLEMAN_WUNSCH) {
+					tp = new translate_and_print_with_buffer<string>(*output, 
+						buffersize,
+						winlen, winlen, cutoffthreshold, 
+						get_profile_size_a(), 
+						get_profile_size_b(), 
+						firststepwidth, secondstepwidth);
+				} else {
+					tp = new translate_and_print_with_buffer<string, lcs::NoTranslation<string> >(*output, 
+						buffersize,
+						winlen, winlen, cutoffthreshold, 
+						get_profile_size_a(), 
+						get_profile_size_b(), 
+						firststepwidth, secondstepwidth);
+				}
 			}
 			tp->offset = offset;
 			tp->p_offset = p_offset;
