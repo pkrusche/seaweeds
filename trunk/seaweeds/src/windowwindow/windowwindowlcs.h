@@ -182,7 +182,7 @@ struct NaiveWindowWindowMatcherGenerator {
 		StripWindowWindowMatcher <
 			string, 
 			windowlocal::NaiveWindowLocalLlcs<
-				lcs::Llcs<string>, 
+				llcs, 
 				string,
 				windowlocal::reportscore<
 					_report, double
@@ -192,7 +192,7 @@ struct NaiveWindowWindowMatcherGenerator {
 		> * swm = new StripWindowWindowMatcher <
 			string, 
 			windowlocal::NaiveWindowLocalLlcs<
-				lcs::Llcs<string>, 
+				llcs, 
 				string,
 				windowlocal::reportscore<
 					_report, double

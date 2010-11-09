@@ -31,7 +31,7 @@ public:
 		
 		for(size_t j = 0; j < n; j+= stepsize) {
 			string current_window(text.substr(j, window));
-			size_t lcslen = llcs(pattern, current_window);
+			double lcslen = llcs(pattern, current_window);
 
 #ifdef _VERBOSETEST_WINDOWLCS
 			cout << "window " << j << "..." << j+window  << ":  LCS =  " << lcslen << endl;
@@ -39,10 +39,10 @@ public:
 #endif // _VERBOSETEST_WINDOWLCS
 
 			if(rpt != NULL) {
-				(*rpt) (j, (double)lcslen);
+				(*rpt) (j, lcslen);
 			}
 
-			if(lcslen == p) {
+			if(lcslen > p-1) {
 				++count;
 			}
 		}

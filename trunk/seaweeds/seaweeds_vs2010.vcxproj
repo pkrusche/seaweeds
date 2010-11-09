@@ -78,7 +78,7 @@
     <NMakeReBuildCommandLine>scons -Q mode=release -c &amp;&amp; scons -Q mode=release</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>src; C:\Boost\include\boost-1_44\</NMakeIncludeSearchPath>
-    <NMakeOutput>bin\dynamicprogramming_testing_win32_default_release.exe</NMakeOutput>
+    <NMakeOutput>bin\windowalignment_BSP_win32_default_release.exe</NMakeOutput>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

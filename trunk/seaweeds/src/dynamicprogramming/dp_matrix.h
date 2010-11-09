@@ -45,13 +45,10 @@ namespace dynamic_programming {
 			cur_top_row = &top_dp_row;
 			cur_left_col = &left_dp_column;
 			prev_top_row = cur_top_row;
-			prev_left_col = cur_left_col;
 		}
 
 		std::vector<dp_element_t> * cur_top_row;
-		std::vector<dp_element_t> * prev_top_row;
 		std::vector<dp_element_t> * cur_left_col;
-		std::vector<dp_element_t> * prev_left_col;
 
 	private:
 		/*!
@@ -59,8 +56,10 @@ namespace dynamic_programming {
 		 */
 		std::vector<dp_element_t> left_dp_column;
 		std::vector<dp_element_t> top_dp_row;
+		std::vector<dp_element_t> * prev_top_row;
 
 		std::vector<dp_element_t> tmp_dp;
+
 
 		/*!
 		 * the operator. 
@@ -87,6 +86,7 @@ namespace dynamic_programming {
 			}
 			prev_top_row = &top_dp_row;
 			cur_top_row = &tmp_dp;
+			cur_left_col = &left_dp_column;
 		
 			for (register size_t i = 1; i <= m; ++i) {
 				last = (*cur_left_col)[i];

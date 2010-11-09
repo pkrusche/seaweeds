@@ -14,13 +14,13 @@
 
 namespace windowlocal {
 
-	/**
-	 * @brief window printer class
-	 * This class writes windows into an output stream
-	 */
 	template <class string>
 	class translate_and_print {
 	public:
+		translate_and_print (std::ostream & o) : _out(o) {}
+
+		virtual ~translate_and_print() {}
+
 		std::ostream & _out;
 		double threshold;
 		size_t m, n;
@@ -36,7 +36,17 @@ namespace windowlocal {
 		size_t stepsize_a;
 		size_t stepsize_b;
 
-		translate_and_print(
+		virtual void operator() (window<> const & win2) = 0;
+	};
+
+	/**
+	 * @brief window printer class
+	 * This class writes windows into an output stream
+	 */
+	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> >
+	class translate_and_print_unbuffered : public translate_and_print <string> {
+	public:
+		translate_and_print_unbuffered (
 			std::ostream & o, 
 			size_t _m, size_t _n, 
 			double _t,
@@ -44,7 +54,10 @@ namespace windowlocal {
 			size_t windows_y = 0,
 			size_t step_x = 1,
 			size_t step_y = 1
-			) : _out(o), m(_m), n(_n), threshold(_t) {
+			) : translate_and_print <string>(o) {
+				m = _m;
+				n = _n;
+				threshold = _t;
 				offset = 0;
 				p_offset = 0;
 
@@ -67,7 +80,7 @@ namespace windowlocal {
 				}
 		}
 
-		virtual ~translate_and_print() {
+		virtual ~translate_and_print_unbuffered() {
 			if (profile_a != NULL) {
 				delete [] profile_a ;
 			}
@@ -81,14 +94,14 @@ namespace windowlocal {
 			window<> win = win2;
 			if(!( // check if this score is reported for a real position, or if it is for a fractional 
 				// position (within a supercell)
-				lcs::ScoreTranslation<string>::validcoord(win.x0) && lcs::ScoreTranslation<string>::validcoord(win.x1)
+				scoretranslation::validcoord(win.x0) && scoretranslation::validcoord(win.x1)
 				) 
 				) {
 					return;
 			}
-			win.x0 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x0);
-			win.x1 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x1);
-			win.score = lcs::ScoreTranslation<string>::translatescore(m, n, win.score);
+			win.x0 = scoretranslation::translatecoord_bk(win.x0);
+			win.x1 = scoretranslation::translatecoord_bk(win.x1);
+			win.score = scoretranslation::translatescore(m, n, win.score);
 			if(win.score > threshold) {
 				_out << win.x0 + offset << "\t" << win.x1 << "\t" << win.score << endl;
 			}
@@ -107,8 +120,8 @@ namespace windowlocal {
 
 	};
 
-	template <class string> 
-	class translate_and_print_with_buffer : public translate_and_print < string > {
+	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> > 
+	class translate_and_print_with_buffer : public translate_and_print_unbuffered < string, scoretranslation > {
 	public:
 		translate_and_print_with_buffer(
 			std::ostream & o, size_t _max_windows,
@@ -118,12 +131,12 @@ namespace windowlocal {
 			size_t windows_y = 0,
 			size_t step_x = 1,
 			size_t step_y = 1
-			) : translate_and_print <string> (o, _m, _n, _t, windows_x, windows_y, step_x, step_y) {
+			) : translate_and_print_unbuffered <string, scoretranslation> (o, _m, _n, _t, windows_x, windows_y, step_x, step_y) {
 			max_windows = _max_windows;
 			windowcount = 0;
 		}
 
-		~translate_and_print_with_buffer() {
+		virtual ~translate_and_print_with_buffer() {
 			using namespace std;
 			cout << "Flushing output, window count : " << windowcount << endl;
 			for (std::map<int, bucket>::iterator it = winbuffer.begin(); it != winbuffer.end(); ++it) {
@@ -140,14 +153,14 @@ namespace windowlocal {
 			window<> win = win2;
 			if(!( // check if this score is reported for a real position, or if it is for a fractional 
 				  // position (within a supercell)
-				lcs::ScoreTranslation<string>::validcoord(win.x0) && lcs::ScoreTranslation<string>::validcoord(win.x1)
+				scoretranslation::validcoord(win.x0) && scoretranslation::validcoord(win.x1)
 				) 
 				) {
 				return;
 			}
-			win.x0 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x0);
-			win.x1 = lcs::ScoreTranslation<string>::translatecoord_bk(win.x1);
-			win.score = lcs::ScoreTranslation<string>::translatescore( translate_and_print<string> ::m,  translate_and_print<string> ::n, win.score);
+			win.x0 = scoretranslation::translatecoord_bk(win.x0);
+			win.x1 = scoretranslation::translatecoord_bk(win.x1);
+			win.score = scoretranslation::translatescore( translate_and_print<string> ::m,  translate_and_print<string> ::n, win.score);
 			if(win.score >  translate_and_print<string> ::threshold) {
 				int h = hashfun(win.score);
 				if (winbuffer.find(h) == winbuffer.end()) {
@@ -162,7 +175,7 @@ namespace windowlocal {
 				++windowcount;
 
 				while(windowcount > max_windows) {
-					h = hashfun( translate_and_print<string> ::threshold);
+					h = hashfun( translate_and_print<string> ::threshold );
 					if(winbuffer.find(h) != winbuffer.end()) {
 						windowcount -= winbuffer[h].size();
 						winbuffer.erase(h);
