@@ -18,32 +18,54 @@ class PairwiseScoringOperator {
 public:
 	int subst_matrix[6][6];
 	
-	double gap_penalty_h;
-	double gap_penalty_v;
 	double normalization;
 
-private:
 	int gap_score_h;
 	int gap_score_v;
 public:
 	PairwiseScoringOperator() {
+//		for (int i = 0; i < 6; ++i)	{
+//			for (int j = 0; j < 6; ++j)	{
+//				if (i == j && i < 4) {
+//					subst_matrix[i][j] = 2;
+//				} else {
+//					subst_matrix[i][j] = 0;
+//				}
+//			}
+//		}
+
+//		gap_score_h = -1;
+//		gap_score_v = -1;
+
+//		normalization =  0.5;
+
 		for (int i = 0; i < 6; ++i)	{
-			for (int j = 0; j < 6; ++j)	{
-				if (i == j && i < 4) {
-					subst_matrix[i][j] = 2;
-				} else {
-					subst_matrix[i][j] = 0;
-				}
-			}
+			memset(&(subst_matrix[i]), 0, sizeof(int) * 6);
 		}
+		subst_matrix[0][0] = 91;
+		subst_matrix[0][1] = -114;
+		subst_matrix[0][2] = -31;
+		subst_matrix[0][3] = -123;
 
-		gap_penalty_h = -0.5;
-		gap_penalty_v = -0.5;
+		subst_matrix[1][0] = -114;
+		subst_matrix[1][1] = 100;
+		subst_matrix[1][2] = -125;
+		subst_matrix[1][3] = -31;
 
-		gap_score_h = -1;
-		gap_score_v = -1;
+		subst_matrix[2][0] = -31;
+		subst_matrix[2][1] = -125;
+		subst_matrix[2][2] = 100;
+		subst_matrix[2][3] = -114;
 
-		normalization =  0.5;
+		subst_matrix[3][0] = -123;
+		subst_matrix[3][1] = -31;
+		subst_matrix[3][2] = -114;
+		subst_matrix[3][3] = 91;
+
+		gap_score_h = -50;		
+		gap_score_v = -50;
+
+		normalization = 0.01;
 	}
 
 	static _string translate_input(std:: string const & str, bool first = true) {
@@ -59,12 +81,12 @@ public:
 			case 'a':
 				translated[i] = 0;
 				break;
-			case 'G':
-			case 'g':
-				translated[i] = 1;
-				break;
 			case 'C':
 			case 'c':
+				translated[i] = 1;
+				break;
+			case 'G':
+			case 'g':
 				translated[i] = 2;
 				break;
 			case 'T':
