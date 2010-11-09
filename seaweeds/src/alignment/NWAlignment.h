@@ -109,7 +109,7 @@ public:
 
 };
 	
-template <class _string = std::string, class _op = PairwiseScoringOperator <typename _string > >
+template <class _string = std::string, class _op = PairwiseScoringOperator < > >
 class NWAlignment : public dynamic_programming::DynamicProgrammingMatrixSolver<_string, typename _op::score_t, _op> {
 public:
 	typedef  typename _op :: score_t score_t;
@@ -119,7 +119,8 @@ public:
 
 	score_t operator() (_string left_input, _string top_input) {
 		return scoring.convert_score(
-			((DynamicProgrammingMatrixSolver<_string, typename _op :: score_t, _op>)*this)(left_input, top_input),
+			((dynamic_programming::
+				DynamicProgrammingMatrixSolver<_string, typename _op :: score_t, _op>)*this)(left_input, top_input),
 			left_input.size(),
 			top_input.size()
 		);

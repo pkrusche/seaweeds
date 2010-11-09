@@ -297,10 +297,10 @@ namespace windowlocal {
 		case NEEDLEMAN_WUNSCH: {
 			//  This is a naive matcher using standard LCS score computation
 			//  Running time is O(m n w^2)
-			_a = alignment :: PairwiseScoringOperator <typename IntegerVector<BPC> > :: translate_input (
+			_a = alignment :: PairwiseScoringOperator <IntegerVector<BPC> > :: translate_input (
 					a, true
 				);
-			_b = alignment :: PairwiseScoringOperator <typename IntegerVector<BPC> > :: translate_input (
+			_b = alignment :: PairwiseScoringOperator <IntegerVector<BPC> > :: translate_input (
 				b, false
 				);
 			NaiveWindowWindowMatcherGenerator<IntegerVector<BPC>, alignment::NWAlignment< IntegerVector<BPC> > > matcher;
