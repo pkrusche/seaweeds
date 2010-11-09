@@ -4,22 +4,22 @@
  ***************************************************************************/
 
 /**
- * @file translate_and_print.h
+ * @file WindowPairOutput.h
  * @author Peter Krusche
  * 
  */
 
-#ifndef translate_and_print_h__
-#define translate_and_print_h__
+#ifndef __WINDOWOUTPUT_H__
+#define __WINDOWOUTPUT_H__
 
 namespace windowlocal {
 
 	template <class string>
-	class translate_and_print {
+	class WindowPairOutput {
 	public:
-		translate_and_print (std::ostream & o) : _out(o) {}
+		WindowPairOutput (std::ostream & o) : _out(o) {}
 
-		virtual ~translate_and_print() {}
+		virtual ~WindowPairOutput() {}
 
 		std::ostream & _out;
 		double threshold;
@@ -44,9 +44,9 @@ namespace windowlocal {
 	 * This class writes windows into an output stream
 	 */
 	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> >
-	class translate_and_print_unbuffered : public translate_and_print <string> {
+	class WindowOutputUnbuffered : public WindowPairOutput <string> {
 	public:
-		translate_and_print_unbuffered (
+		WindowOutputUnbuffered (
 			std::ostream & o, 
 			size_t _m, size_t _n, 
 			double _t,
@@ -54,7 +54,7 @@ namespace windowlocal {
 			size_t windows_y = 0,
 			size_t step_x = 1,
 			size_t step_y = 1
-			) : translate_and_print <string>(o) {
+			) : WindowPairOutput <string>(o) {
 				m = _m;
 				n = _n;
 				threshold = _t;
@@ -80,7 +80,7 @@ namespace windowlocal {
 				}
 		}
 
-		virtual ~translate_and_print_unbuffered() {
+		virtual ~WindowOutputUnbuffered() {
 			if (profile_a != NULL) {
 				delete [] profile_a ;
 			}
@@ -121,9 +121,9 @@ namespace windowlocal {
 	};
 
 	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> > 
-	class translate_and_print_with_buffer : public translate_and_print_unbuffered < string, scoretranslation > {
+	class WindowOutputWithBuffer : public WindowOutputUnbuffered < string, scoretranslation > {
 	public:
-		translate_and_print_with_buffer(
+		WindowOutputWithBuffer(
 			std::ostream & o, size_t _max_windows,
 			size_t _m, size_t _n, 
 			double _t,
@@ -131,21 +131,21 @@ namespace windowlocal {
 			size_t windows_y = 0,
 			size_t step_x = 1,
 			size_t step_y = 1
-			) : translate_and_print_unbuffered <string, scoretranslation> (o, _m, _n, _t, windows_x, windows_y, step_x, step_y) {
+			) : WindowOutputUnbuffered <string, scoretranslation> (o, _m, _n, _t, windows_x, windows_y, step_x, step_y) {
 			max_windows = _max_windows;
 			windowcount = 0;
 		}
 
-		virtual ~translate_and_print_with_buffer() {
+		virtual ~WindowOutputWithBuffer() {
 			using namespace std;
 			cout << "Flushing output, window count : " << windowcount << endl;
 			for (std::map<int, bucket>::iterator it = winbuffer.begin(); it != winbuffer.end(); ++it) {
 				for (size_t s = 0; s < it->second.size(); ++s) {
-					translate_and_print<string> ::_out << it->second[s].x0 + translate_and_print<string> :: offset << "\t" << it->second[s].x1 << "\t" 
+					WindowPairOutput<string> ::_out << it->second[s].x0 + WindowPairOutput<string> :: offset << "\t" << it->second[s].x1 << "\t" 
 						 << it->second[s].score << endl;
 				}
 			}
-			translate_and_print<string> ::_out.flush();
+			WindowPairOutput<string> ::_out.flush();
 		}
 
 		virtual void operator() (window<> const & win2) {
@@ -160,8 +160,8 @@ namespace windowlocal {
 			}
 			win.x0 = scoretranslation::translatecoord_bk(win.x0);
 			win.x1 = scoretranslation::translatecoord_bk(win.x1);
-			win.score = scoretranslation::translatescore( translate_and_print<string> ::m,  translate_and_print<string> ::n, win.score);
-			if(win.score >  translate_and_print<string> ::threshold) {
+			win.score = scoretranslation::translatescore( WindowPairOutput<string> ::m,  WindowPairOutput<string> ::n, win.score);
+			if(win.score >  WindowPairOutput<string> ::threshold) {
 				int h = hashfun(win.score);
 				if (winbuffer.find(h) == winbuffer.end()) {
 					winbuffer[h] = bucket();
@@ -175,25 +175,25 @@ namespace windowlocal {
 				++windowcount;
 
 				while(windowcount > max_windows) {
-					h = hashfun( translate_and_print<string> ::threshold );
+					h = hashfun( WindowPairOutput<string> ::threshold );
 					if(winbuffer.find(h) != winbuffer.end()) {
 						windowcount -= winbuffer[h].size();
 						winbuffer.erase(h);
 					}
-					++ translate_and_print<string> :: threshold;
-					cout << "Number of windows: " << windowcount << ", threshold raised: " <<  translate_and_print<string> ::threshold << endl;
+					++ WindowPairOutput<string> :: threshold;
+					cout << "Number of windows: " << windowcount << ", threshold raised: " <<  WindowPairOutput<string> ::threshold << endl;
 				}
 			}
-			if ( translate_and_print<string> ::profile_a != NULL) {
-				size_t s_a = (win.x0 +  translate_and_print<string> ::p_offset) /  translate_and_print<string> ::stepsize_a;
-				ASSERT(s_a <  translate_and_print<string> ::profile_size_a);
-				translate_and_print<string> ::profile_a[s_a] = max(win.score,  translate_and_print<string> ::profile_a[s_a]);
+			if ( WindowPairOutput<string> ::profile_a != NULL) {
+				size_t s_a = (win.x0 +  WindowPairOutput<string> ::p_offset) /  WindowPairOutput<string> ::stepsize_a;
+				ASSERT(s_a <  WindowPairOutput<string> ::profile_size_a);
+				WindowPairOutput<string> ::profile_a[s_a] = max(win.score,  WindowPairOutput<string> ::profile_a[s_a]);
 			}
 
-			if ( translate_and_print<string> ::profile_b != NULL) {
-				size_t s_b = win.x1 /  translate_and_print<string> ::stepsize_b;
-				ASSERT(s_b <  translate_and_print<string> ::profile_size_b);
-				translate_and_print<string> ::profile_b[s_b] = max(win.score,  translate_and_print<string> ::profile_b[s_b]);
+			if ( WindowPairOutput<string> ::profile_b != NULL) {
+				size_t s_b = win.x1 /  WindowPairOutput<string> ::stepsize_b;
+				ASSERT(s_b <  WindowPairOutput<string> ::profile_size_b);
+				WindowPairOutput<string> ::profile_b[s_b] = max(win.score,  WindowPairOutput<string> ::profile_b[s_b]);
 			}			
 		}
 
@@ -210,4 +210,4 @@ namespace windowlocal {
 	};
 
 };
-#endif // translate_and_print_h__
+#endif // __WINDOWOUTPUT_H__

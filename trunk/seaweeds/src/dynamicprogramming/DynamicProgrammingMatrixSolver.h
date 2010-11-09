@@ -3,8 +3,8 @@
  *   peter@dcs.warwick.ac.uk                                               *
  ***************************************************************************/
 
-#ifndef __DP_MATRIX_H__
-#define __DP_MATRIX_H__
+#ifndef __DP_MATRIX_SOLVER_H__
+#define __DP_MATRIX_SOLVER_H__
 
 #include <vector>
 
@@ -39,9 +39,9 @@ namespace dynamic_programming {
 	 * \date October 2010
 	 */
 	template <class input_t, class dp_element_t, class operator_t>
-	class dp_matrix_solver {
+	class DynamicProgrammingMatrixSolver {
 	public:
-		dp_matrix_solver() {
+		DynamicProgrammingMatrixSolver() {
 			cur_top_row = &top_dp_row;
 			cur_left_col = &left_dp_column;
 			prev_top_row = cur_top_row;
@@ -104,5 +104,5 @@ namespace dynamic_programming {
 
 #pragma optimize("g",off)
 
-#endif
+#endif // __DP_MATRIX_SOLVER_H__
 

@@ -20,7 +20,7 @@
 #include <tbb/task_scheduler_init.h>
 #include <tbb/mutex.h>
 
-#include "windowwindow/alignmentplotcomputation.h"
+#include "windowwindow/AlignmentPlotComputation.h"
 #include "windowwindow/postprocesswindows.h"
 
 // the number of bits per character in our input strings

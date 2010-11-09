@@ -204,12 +204,6 @@
     <ClInclude Include="src\datamodel\sequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\dynamicprogramming\dp_matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\dynamicprogramming\dp_matrix_integer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\gpulib\ATI_Gpulib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -309,9 +303,6 @@
     <ClInclude Include="src\windowlocal\seaweeds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\windowwindow\alignmentplotcomputation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\windowwindow\postprocesswindows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -319,9 +310,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\windowwindow\splitwindowwindowlcs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\windowwindow\translate_and_print.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\windowwindow\windowwindowlcs.h">
@@ -343,6 +331,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xasmlib\xasmlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dynamicprogramming\DynamicProgrammingMatrixSolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\windowwindow\WindowOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\windowwindow\AlignmentPlotComputation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
