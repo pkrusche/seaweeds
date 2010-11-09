@@ -150,8 +150,7 @@
     <ClInclude Include="src\bspcpp\tools\utilities.h" />
     <ClInclude Include="src\checkpoint\checkpoint.h" />
     <ClInclude Include="src\datamodel\sequence.h" />
-    <ClInclude Include="src\dynamicprogramming\dp_matrix.h" />
-    <ClInclude Include="src\dynamicprogramming\dp_matrix_integer.h" />
+    <ClInclude Include="src\dynamicprogramming\DynamicProgrammingMatrixSolver.h" />
     <ClInclude Include="src\gpulib\ATI_Gpulib.h" />
     <ClInclude Include="src\gpulib\seaweeds_gpu.h" />
     <ClInclude Include="src\gpulib\seaweeds_gpu_gpu.h" />
@@ -185,11 +184,11 @@
     <ClInclude Include="src\windowlocal\report.h" />
     <ClInclude Include="src\windowlocal\scorematrix.h" />
     <ClInclude Include="src\windowlocal\seaweeds.h" />
-    <ClInclude Include="src\windowwindow\alignmentplotcomputation.h" />
+    <ClInclude Include="src\windowwindow\AlignmentPlotComputation.h" />
     <ClInclude Include="src\windowwindow\postprocesswindows.h" />
     <ClInclude Include="src\windowwindow\seaweedoverlap.h" />
     <ClInclude Include="src\windowwindow\splitwindowwindowlcs.h" />
-    <ClInclude Include="src\windowwindow\translate_and_print.h" />
+    <ClInclude Include="src\windowwindow\WindowOutput.h" />
     <ClInclude Include="src\windowwindow\windowwindowlcs.h" />
     <ClInclude Include="src\xasmlib\CharMapping.h" />
     <ClInclude Include="src\xasmlib\functors.h" />

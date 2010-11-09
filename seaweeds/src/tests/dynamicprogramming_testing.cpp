@@ -12,8 +12,7 @@
 
 #include "xasmlib/IntegerVector.h"
 #include "bspcpp/tools/utilities.h"
-#include "dynamicprogramming/dp_matrix.h"
-#include "dynamicprogramming/dp_matrix_integer.h"
+#include "dynamicprogramming/DynamicProgrammingMatrixSolver.h"
 
 #include "lcs/Llcs.h"
 #include "lcs/LlcsCIPR.h"
@@ -67,8 +66,7 @@ int main(int argc, const char * argv[]) {
 		s2[j] = rand() % 256;
 	}
 
-	dp_matrix_solver<IntegerVector<8>, int, dp_lcs_op> solver;
-	dp_matrix_integer_solver<IntegerVector<8>, dp_lcs_op> intsolver;
+	DynamicProgrammingMatrixSolver<IntegerVector<8>, int, dp_lcs_op> solver;
 	
 	solver.cur_left_col->resize(testsize+1, 0);
 	solver.cur_top_row->resize(testsize+1, 0);
@@ -82,20 +80,13 @@ int main(int argc, const char * argv[]) {
 	double t1 = time();
 	cout << "Time: " << t1 - t0 << endl << endl;
 
-	cout << "Using int DP solver. " << endl;
-
-	t0 = time();
-	int intsolver_score = intsolver(s1, s2);
-	t1 = time();
-	cout << "Time: " << t1 - t0 << endl << endl;
-
 	cout << "Using standard LCS. " << endl;
 	t0 = time();
 	int std_score = _lcs_std(s1, s2);
 	t1 = time();
 	cout << "Time: " << t1 - t0 << endl << endl;
 
-	cout << solver_score << " " << intsolver_score << " " << std_score << endl;
+	cout << solver_score << " " << std_score << endl;
 
 	return 0;
 }
