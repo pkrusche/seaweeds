@@ -43,7 +43,7 @@ namespace windowlocal {
 	 * @brief window printer class
 	 * This class writes windows into an output stream
 	 */
-	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> >
+	template <class string, class scoretranslation = lcs::ScoreTranslation<string> >
 	class WindowOutputUnbuffered : public WindowPairOutput <string> {
 	public:
 		WindowOutputUnbuffered (
@@ -55,37 +55,37 @@ namespace windowlocal {
 			size_t step_x = 1,
 			size_t step_y = 1
 			) : WindowPairOutput <string>(o) {
-				m = _m;
-				n = _n;
-				threshold = _t;
-				offset = 0;
-				p_offset = 0;
+				this->m = _m;
+				this->n = _n;
+				this->threshold = _t;
+				this->offset = 0;
+				this->p_offset = 0;
 
-				profile_size_a = windows_x;
-				profile_size_b = windows_y;
-				stepsize_a = step_x;
-				stepsize_b = step_y;
+				this->profile_size_a = windows_x;
+				this->profile_size_b = windows_y;
+				this->stepsize_a = step_x;
+				this->stepsize_b = step_y;
 
 				if (windows_x != 0) {
-					profile_a = new double[windows_x];
-					memset(profile_a, 0, sizeof(double)*windows_x);
+					this->profile_a = new double[windows_x];
+					memset(this->profile_a, 0, sizeof(double)*windows_x);
 				} else {
-					profile_a = NULL;
+					this->profile_a = NULL;
 				}
 				if (windows_y != 0) {
-					profile_b = new double[windows_y];
-					memset(profile_b, 0, sizeof(double)*windows_y);
+					this->profile_b = new double[windows_y];
+					memset(this->profile_b, 0, sizeof(double)*windows_y);
 				} else {
-					profile_b = NULL;
+					this->profile_b = NULL;
 				}
 		}
 
 		virtual ~WindowOutputUnbuffered() {
-			if (profile_a != NULL) {
-				delete [] profile_a ;
+			if (this->profile_a != NULL) {
+				delete [] this->profile_a ;
 			}
-			if (profile_b != NULL) {
-				delete [] profile_b;
+			if (this->profile_b != NULL) {
+				delete [] this->profile_b;
 			}
 		}
 
@@ -101,26 +101,26 @@ namespace windowlocal {
 			}
 			win.x0 = scoretranslation::translatecoord_bk(win.x0);
 			win.x1 = scoretranslation::translatecoord_bk(win.x1);
-			win.score = scoretranslation::translatescore(m, n, win.score);
-			if(win.score > threshold) {
-				_out << win.x0 + offset << "\t" << win.x1 << "\t" << win.score << endl;
+			win.score = scoretranslation::translatescore(this->m, this->n, win.score);
+			if(win.score > this->threshold) {
+				this->_out << win.x0 + this->offset << "\t" << win.x1 << "\t" << win.score << endl;
 			}
-			if (profile_a != NULL) {
-				size_t s_a = (win.x0 + p_offset) / stepsize_a;
-				ASSERT(s_a < profile_size_a);
-				profile_a[s_a] = max(win.score, profile_a[s_a]);
+			if (this->profile_a != NULL) {
+				size_t s_a = (win.x0 + this->p_offset) / this->stepsize_a;
+				ASSERT(s_a < this->profile_size_a);
+				this->profile_a[s_a] = max(win.score, this->profile_a[s_a]);
 			}
 
-			if (profile_b != NULL) {
-				size_t s_b = win.x1 / stepsize_b;
-				ASSERT(s_b < profile_size_b);
-				profile_b[s_b] = max(win.score, profile_b[s_b]);
+			if (this->profile_b != NULL) {
+				size_t s_b = win.x1 / this->stepsize_b;
+				ASSERT(s_b < this->profile_size_b);
+				this->profile_b[s_b] = max(win.score, this->profile_b[s_b]);
 			}
 		}
 
 	};
 
-	template <class string, class scoretranslation = lcs::ScoreTranslation<typename string> > 
+	template <class string, class scoretranslation = lcs::ScoreTranslation<string> > 
 	class WindowOutputWithBuffer : public WindowOutputUnbuffered < string, scoretranslation > {
 	public:
 		WindowOutputWithBuffer(
