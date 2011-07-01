@@ -13,4 +13,4 @@ Peter Krusche and Alexander Tiskin. Computing Alignment Plots Efficiently. In Pr
 
 Alex Tiskin's publications website: [http://www2.warwick.ac.uk/fac/sci/dcs/people/alexander_tiskin/pub/]
 
-Peter Krusche's website: [http://www2.warwick.ac.uk/fac/sci/dcs/people/research/csreae/research/]
+Peter Krusche's website: [http://www.dcs.warwick.ac.uk/~peter]
