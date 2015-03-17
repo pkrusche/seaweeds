@@ -1,0 +1,15 @@
+# Seaweed Talk Slides #
+
+Here is a link to slides about the algorithms behind this code:
+
+http://www.dcs.warwick.ac.uk/~peter/files/ap_talk_lsd.pdf
+
+Also, there is a paper:
+
+Peter Krusche and Alexander Tiskin. Computing Alignment Plots Efficiently. In Proceedings of ParCo 2009. To appear. 2009  http://arxiv.org/abs/0909.2000
+
+**Further talks and papers on seaweeds:**
+
+Alex Tiskin's publications website: http://www2.warwick.ac.uk/fac/sci/dcs/people/alexander_tiskin/pub/
+
+Peter Krusche's website: http://www.dcs.warwick.ac.uk/~peter

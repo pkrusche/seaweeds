@@ -1,0 +1,126 @@
+# C++ Code for Seaweed Algorithms -- Compiling Instructions #
+
+## Prerequisites ##
+
+The seaweed code can be compiled using a recent version of gcc (>4.0.0 on Linux and MacOS) or MSVC (Windows, 2005 or 2008). Intel C++ should work as well.
+
+For compiling the code, you need the tool "SCons", an automatic build environment based on Python: http://www.scons.org/
+
+For compiling the assembler code, you need yasm: http://www.tortall.net/projects/yasm/ or (less preferably) nasm http://www.nasm.us/
+
+Optionally, you can use STLFilt http://www.bdsoft.com/tools/stlfilt.html for filtering C++ error message output.
+
+## Required libraries ##
+
+  * Boost -- get it at http://www.boost.org/ or install the corresponding dev packages in Linux.
+  * Loki  -- available at http://loki-lib.sourceforge.net/
+  * Intel TBB -- precompiled binaries are available at http://www.threadingbuildingblocks.org/
+  * Also, this project uses the BSPonMPI library https://sourceforge.net/projects/bsponmpi/ version 0.3. You need to download and compile this library, and add its library/include paths to the compiler/linker search paths.
+
+## Compiling ##
+
+### All Platforms ###
+
+Scons will try to configure the libraries and paths automatically, but will need additional input if you have installed the libraries above in a non-standard path. The following sections give some guidance on how to compile on Windows, Linux or MacOS.
+
+When running Scons for the first time in the checkout directory, it will tell you the name of the options file it wants to use on your system:
+
+```
+$ scons -Q configure=1
+
+To use specific options for this system, use options file "opts_virtualsettembrini-ubuntu_Linux_x86_64.py"
+Using options from opts.py
+```
+
+The options file contains information on additional paths used by the build system. In most cases, making changes to this file, or supplying an adapted file for each system you need to compile on should be sufficient. The standard filename is 'opts.py', however, the system generates a platform-specific name as well (this is useful for maintaining different builds in the same directory).
+
+Once you have configured the paths and compile flags correctly (see below for platform-specific instructions), you can compile a release version by running:
+
+```
+scons -Q mode=release
+```
+
+The executables get assigned a suffix according to platform and build mode (valid values are release, debug or profile), and are placed in the bin/ subdirectory.
+
+### Windows ###
+
+The easiest way to compile on Windows is either using one of the supplied SLN files (for VC 2005 or VC 2008), or running Scons in a Visual Studio command line. It is still necessary to modify the Scons options file. Here is an example:
+
+```
+# comment this out if you do not use stlfilt for MSVC
+cl_stlfilt = '"..\\stlfilt\\mfilt.bat"'
+
+# uncomment the following line to use MinGw on Windows
+# toolset = 'gcc'
+
+# You can use STLFilt with MinGW, too
+## gcc_stlfilt = 'gfilt'
+
+# You can specify the boost directory if it is not installed in C:\Boost.
+# If boost is installed in its standard location under C:\Boost, Scons will find it automatically
+# win32_boostdir = 'C:\\Users\\peter\\Documents\\Code\\boost_1_36_0';
+
+# This is the path to Loki. You need to unzip, and compile Loki so the static libraries are available.
+# You might need to check the loki make scripts so they use the same runtime library as this code (LIBCMT[D])
+win32_lokidir = 'C:\\Users\\peter\\Documents\\Code\\loki-0.1.6';
+
+# You can get a binary installation of TBB of their website. Do not forget to copy the 
+# static libraries for your system into win32_tbbdir\\lib (since we can't guess this within
+# the scons script)
+win32_tbbdir = 'C:\\Users\\peter\\Documents\\Code\\tbb21_20080605oss';
+
+# This is optional. It is where you have installed and compiled QT.
+QTDIR = 'C:\\Users\\peter\\Documents\\Code\\qt-win-opensource-src-4.4.3';
+```
+
+### Linux ###
+
+The main entries in the options file are:
+
+```
+toolset = 'gcc'
+gcc_stlfilt = 'g++'
+```
+
+You can replace the value of 'gcc\_stlfilt' with the path to gfilt if you want to use STLFilt. It is possible to add the libraries to the search path by specifying additional linker and compiler flags:
+
+```
+additional_cflags = ' -I/opt/boost/include'
+additional_lflags = ' -L/opt/boost/lib'
+```
+
+Remember that if you use dynamic linking versions of loki or other libraries, that their library paths need to be accessible via LD\_LIBRARY\_PATH.
+
+### MacOS ###
+
+Compiling on MacOS X is very similar to compiling on Linux.
+
+Here is an options file to compile on the WSBC cluster:
+
+```
+gcc_stlfilt = 'g++'
+use_yasm=1
+additional_cflags=' -I~/include '
+additional_lflags=' -L~/lib ~/lib/libloki.dylib'
+```
+
+All required libraries (boost, TBB and loki) have been installed into ~/lib and ~/include.
+
+### Option File Summary ###
+
+|'''Option Name''' | '''Description''' | '''Default'''|
+|:-----------------|:------------------|:-------------|
+|mode|Build mode: set to debug or release|'debug'|
+|configure|Perform configuration|0 |
+|icc|Force using icc|0 |
+|profile|Include debug information also in release version and enable profiling using gprof|1 |
+|docs|Build Doxygen documentation|0 |
+|use\_yasm|Use yasm instead of nasm|1 |
+|cl\_stlfilt|Path to STLFilt for MSVC|''|
+|gcc\_stlfilt|Path to STLFilt for gcc|''|
+|win32\_boostdir|Path to Boost library in Win32|'C:\\Boost\\include'|
+|win32\_lokidir|Path to Loki library in Win32|'C:\\Boost\\include'|
+|win32\_tbbdir|Path to TBB library in Win32|'C:\\tbb'|
+|win32\_bsponmpidir|Path to bsponmpi library in Win32|'C:\\bsponmpi'|
+|sequential|Use sequential version of the bsponmpi library|0 |
+|simd\_mode|Specify which SIMD instructions to use: mmx, sse2 or nommx|'sse2'|
