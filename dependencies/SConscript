@@ -1,0 +1,29 @@
+
+Import ('root', 'mpi')
+
+###############################################################################
+# JSON CPP Library
+###############################################################################
+
+jsoncpp_env = root.Clone()
+
+jsoncpp_env.Append(
+	CPPPATH = '#dependencies/jsoncpp',
+)
+
+jsoncpp = jsoncpp_env.Library('#lib/jsoncpp', [
+	'#dependencies/jsoncpp/jsoncpp.cpp'
+])
+
+## add library to build envs
+
+root.Prepend (LIBS = jsoncpp)
+mpi.Prepend (LIBS = jsoncpp)
+
+root.Append(
+	CPPPATH = '#dependencies/jsoncpp',
+)
+
+mpi.Append(
+	CPPPATH = '#dependencies/jsoncpp',
+)

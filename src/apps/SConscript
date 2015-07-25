@@ -1,0 +1,36 @@
+Import ("root")
+
+# App library
+applib = root.Library('#lib/applib', [
+	"App.cpp", 
+	"ParameterFile.cpp", 
+	"global_options.cpp"
+	])
+
+approot = root.Clone()
+approot.Prepend(LIBS=[applib])
+
+approot.Program ("#bin/PSSM_Tool", [ 
+	"PSSM_Tool.cpp", 
+	"PSSM/CompareScores.cpp",
+	"PSSM/Distances.cpp",
+	"PSSM/Score.cpp",
+	"PSSM/Info.cpp",
+	"PSSM/Export.cpp",
+	"PSSM/Profile.cpp",
+	 ],  )
+
+approot.Program ("#bin/AlignmentPlot", [ 
+	"AlignmentPlot.cpp", 
+	"Seaweeds/AlignmentPlot_App.cpp", 
+	"Seaweeds/WindowPostProcess_App.cpp", 
+	"Seaweeds/Methods/AlignmentPlot_Method.cpp", 
+	"Seaweeds/Methods/SeaweedNW.cpp", 
+	"Seaweeds/Methods/Seaweeds.cpp", 
+	"Seaweeds/Methods/BLCSNW.cpp", 
+	"Seaweeds/Methods/BLCS.cpp", 
+	 ] )
+
+approot.Program ("#bin/SequenceModel", [ 
+	"SequenceModel.cpp"
+	 ] )

@@ -1,0 +1,75 @@
+
+import os
+
+Import('test')
+Import('test_mpi')
+Import('mode')
+
+# environment for creating reference builds
+refenv = test.Clone()
+refenv.Append(CPPDEFINES = "TEST_REFERENCE")
+
+############################################################################################
+## Performance testing
+############################################################################################
+
+# This is a timer tool for simple timing of program execution
+test.Program('#bin/performance_tests/timer', ['timer.cpp'])
+
+import re
+import glob
+
+for s in glob.glob('perf_*.cpp'):
+	m = re.match (r"perf_(?P<name>.+)\.cpp", s)
+	n = m.group ('name')
+	if n != '':
+		test.Program('#bin/performance_tests/' + n, [ s ])
+	else:
+		print 'Ignoring invalid test file: ' + s
+
+############################################################################################
+## Unit testing
+############################################################################################
+
+for bits in xrange(1,64):
+	filename = os.path.join (Dir("#tests").abspath, "unit_intvector_%i.cpp" % bits)
+	try:
+		os.remove(filename)
+	except OSError: # this would be "except OSError as e:" in python 3.x
+		pass
+
+nbits = xrange(1, 33)
+for bits in nbits:
+	tname = "#tests/unit_intvector_%i.cpp" % bits
+	tname = File(tname).abspath
+	# print "Making " + tname
+	fc = File("#tests/unit_intvector.cpp").get_text_contents()
+	fc = ("#define BITS %i\n" % bits) + ("#define TMNAME(x) x ## _ ## %i\n" % bits) + fc
+	fp = open(tname, 'w')
+	fp.write(fc)
+
+utests = Glob('unit_*.cpp')
+
+if str(Platform()) == "win32":
+	ext = 'obj'
+else:
+	ext = 'o'
+
+utests = utests + map(lambda x: "#src/%s.%s" % (x, ext), ['apps/ParameterFile', 
+	'apps/global_options'])
+
+test.Program('#bin/unit_tests/seaweedtests', utests)
+
+############################################################################################
+## Various testing
+############################################################################################
+
+# test seaweed / scorematrix code
+test.Program('#bin/misc_test/seaweedtesting', ['seaweedtesting.cpp'])
+# this doesn't compile in debug mode because boost multiarray 
+pr = str(Platform()) + mode
+if pr == "win32debug":
+	print "seaweedtesting_reference not compiled on windows/debug"
+else:
+	Command("seaweedtesting_reference.cpp", "seaweedtesting.cpp", Copy("$TARGET", "$SOURCE"))
+	refenv.Program('#bin/misc_test/seaweedtesting_reference', ['seaweedtesting_reference.cpp'])

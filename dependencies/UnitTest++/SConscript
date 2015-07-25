@@ -1,0 +1,62 @@
+
+Import ('root', 'mpi', 'test', 'test_mpi')
+
+src = [ "src/AssertException.cpp", 
+	"src/Test.cpp", 
+	"src/Checks.cpp", 
+	"src/TestRunner.cpp", 
+	"src/TestResults.cpp", 
+	"src/TestReporter.cpp", 
+	"src/TestReporterStdout.cpp", 
+	"src/ReportAssert.cpp", 
+	"src/TestList.cpp", 
+	"src/TimeConstraint.cpp", 
+	"src/TestDetails.cpp", 
+	"src/MemoryOutStream.cpp", 
+	"src/DeferredTestReporter.cpp", 
+	"src/DeferredTestResult.cpp", 
+	"src/XmlTestReporter.cpp", 
+	"src/CurrentTest.cpp" ]
+
+platform_name = ARGUMENTS.get('OS', root['PLATFORM'])
+	
+if platform_name == 'win32':
+	src.append ( "src/Win32/TimeHelpers.cpp" )
+else:
+	src.append ( "src/Posix/SignalTranslator.cpp" )
+	src.append ( "src/Posix/TimeHelpers.cpp" )
+
+unittestlib = root.Library ('#lib/unittest', src)
+
+test.Append (
+	LIBS = unittestlib,
+	CPPPATH = ['#dependencies/UnitTest++/src']
+)
+test_mpi.Append (
+	LIBS = unittestlib,
+	CPPPATH = ['#dependencies/UnitTest++/src']
+)
+
+test_src = [ "src/tests/Main.cpp", 
+	"src/tests/TestAssertHandler.cpp", 
+	"src/tests/TestChecks.cpp", 
+	"src/tests/TestUnitTest++.cpp", 
+	"src/tests/TestTest.cpp", 
+	"src/tests/TestTestResults.cpp", 
+	"src/tests/TestTestRunner.cpp", 
+	"src/tests/TestCheckMacros.cpp", 
+	"src/tests/TestTestList.cpp", 
+	"src/tests/TestTestMacros.cpp", 
+	"src/tests/TestTimeConstraint.cpp", 
+	"src/tests/TestTimeConstraintMacro.cpp", 
+	"src/tests/TestMemoryOutStream.cpp", 
+	"src/tests/TestDeferredTestReporter.cpp", 
+	"src/tests/TestXmlTestReporter.cpp", 
+	"src/tests/TestCurrentTest.cpp" ]
+
+
+## windows doesn't like that one test.
+if platform_name == 'win32':
+	test.Program('#bin/unit_tests/test_unit++', test_src, CPPDEFINES=["UNITTEST_MINGW"])
+else:
+	test.Program('#bin/unit_tests/test_unit++', test_src)
