@@ -96,7 +96,7 @@ public:
 			++cur;
 		}
 
-		std::istringstream iss(tmp.c_str(), len);
+		std::istringstream iss(tmp, std::istringstream::out);
 		iss >> value;
 	}
 };
@@ -105,9 +105,9 @@ public:
 namespace helpers {
 	template <class _t, size_t n_elements>
 	class ref_wrapper {
-	public: 
-		ref_wrapper() : val(NULL) {} 
-		
+	public:
+		ref_wrapper() : val(NULL) {}
+
 		void init ( _t input_array [n_elements] ) {
 			val = &(input_array[0]);
 		}
@@ -124,28 +124,28 @@ namespace helpers {
 	};
 };
 
-template <class _wrappedserializer, size_t n_elements> 
-class JSONStaticArray : public ValueSerializer < 
-	helpers::ref_wrapper < 
-		typename _wrappedserializer :: value_type, 
-		n_elements > 
+template <class _wrappedserializer, size_t n_elements>
+class JSONStaticArray : public ValueSerializer <
+	helpers::ref_wrapper <
+		typename _wrappedserializer :: value_type,
+		n_elements >
 > {
 public:
-	typedef ValueSerializer < 
-		helpers::ref_wrapper < 
-		typename _wrappedserializer :: value_type, 
-		n_elements > 
+	typedef ValueSerializer <
+		helpers::ref_wrapper <
+		typename _wrappedserializer :: value_type,
+		n_elements >
 	> super_type;
 	typedef helpers::ref_wrapper < typename _wrappedserializer :: value_type, n_elements > _value_type;
 
 	ValueSerializer < _value_type > * init (
-		const char * _membername, 
+		const char * _membername,
 		typename _wrappedserializer::value_type _my_value []) {
 		wr.init (_my_value);
 		return super_type::init (_membername, wr);
 	}
 
-	void write(Json::Value & val, std::string const & path, 
+	void write(Json::Value & val, std::string const & path,
 		const _value_type & value) {
 			Json::Value & v = helpers::expand_path (val, path);
 
@@ -157,7 +157,7 @@ public:
 			}
 	}
 
-	void read(Json::Value & val, std::string const & path, 
+	void read(Json::Value & val, std::string const & path,
 		_value_type & value ) {
 		Json::Value & v = helpers::expand_path (val, path);
 
@@ -173,10 +173,10 @@ private:
 	_wrappedserializer ws;
 };
 
-template < class _wrappedserializer, class _container_type = std::vector < typename _wrappedserializer::value_type > > 
+template < class _wrappedserializer, class _container_type = std::vector < typename _wrappedserializer::value_type > >
 class JSONArray : public ValueSerializer < _container_type > {
 public:
-	void write(Json::Value & val, std::string const & path, 
+	void write(Json::Value & val, std::string const & path,
 		std::vector < typename _wrappedserializer::value_type > const & value) {
 			Json::Value & v = helpers::expand_path (val, path);
 
@@ -188,7 +188,7 @@ public:
 			}
 	}
 
-	void read(Json::Value & val, std::string const & path, 
+	void read(Json::Value & val, std::string const & path,
 		std::vector < typename _wrappedserializer::value_type > & value ) {
 			Json::Value & v = helpers::expand_path (val, path);
 
@@ -201,28 +201,28 @@ private:
 	_wrappedserializer ws;
 };
 
-template < class _container_type > 
+template < class _container_type >
 class JSONEmptyArray : public ValueSerializer < _container_type > {
 public:
-	void write(Json::Value & val, std::string const & path, 
+	void write(Json::Value & val, std::string const & path,
 		_container_type const & value) {
 	}
 
-	void read(Json::Value & val, std::string const & path, 
+	void read(Json::Value & val, std::string const & path,
 		_container_type & value ) {
 			value.clear();
 	}
 };
 
-template < class _wrappedserializer > 
+template < class _wrappedserializer >
 class JSONMap : public ValueSerializer < std::map<std::string, typename _wrappedserializer::value_type > > {
 public:
 	typedef std::map<std::string, typename _wrappedserializer::value_type > value_type;
-	void write(Json::Value & val, std::string const & path, 
+	void write(Json::Value & val, std::string const & path,
 		value_type const & value) {
 			Json::Value & v = helpers::expand_path (val, path);
 			v.clear();
-			
+
 			for (typename value_type::const_iterator j = value.begin(); j != value.end(); ++j) {
 				Json::Value vv;
 				ws.write( vv, "", j->second );
@@ -230,7 +230,7 @@ public:
 			}
 	}
 
-	void read(Json::Value & val, std::string const & path, 
+	void read(Json::Value & val, std::string const & path,
 		value_type & value ) {
 			Json::Value & v = helpers::expand_path (val, path);
 
