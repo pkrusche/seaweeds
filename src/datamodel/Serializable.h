@@ -42,16 +42,16 @@ namespace datamodel {
 			}
 			if (paths.size() == 1 && path != "") {
 				return node [paths[0]];
-			} 
+			}
 			return node;
 		}
 
-		typedef boost::archive::iterators::base64_from_binary< 
-			boost::archive::iterators::transform_width<const char *, 6, 8 > > 
+		typedef boost::archive::iterators::base64_from_binary<
+			boost::archive::iterators::transform_width<const char *, 6, 8 > >
 			_base64;
 		typedef boost::archive::iterators::transform_width<
-			boost::archive::iterators::binary_from_base64< const char * >, 
-			8, 6 > 
+			boost::archive::iterators::binary_from_base64< const char * >,
+			8, 6 >
 			_binary;
 
 		inline std::string encode_base64 (const char * value, size_t len) {
@@ -85,11 +85,11 @@ namespace datamodel {
 		virtual void read(Json::Value & val) = 0;
 	};
 
-	template < class _t > 
+	template < class _t >
 	class ValueSerializer : public ItemSerializer {
 	public:
 		typedef _t value_type;
-		
+
 		virtual ValueSerializer<_t> * init (const char * _membername, _t & _my_value) {
 			membername = _membername;
 			my_value = &_my_value;
@@ -105,9 +105,9 @@ namespace datamodel {
 		}
 
 	protected:
-		virtual void write(Json::Value & val, 
+		virtual void write(Json::Value & val,
 			std::string const & path, _t const & value)  = 0;
-		virtual void read( Json::Value & val, 
+		virtual void read( Json::Value & val,
 			std::string const & path, _t & value ) = 0;
 	private:
 		_t * my_value;
@@ -125,7 +125,7 @@ namespace datamodel {
 		}
 
 		void write(Json::Value & val) {
-			helpers::expand_path (val, "SERIAL_VERSIONID") = 
+			helpers::expand_path (val, "SERIAL_VERSIONID") =
 				myversion.c_str();
 		}
 
@@ -133,7 +133,7 @@ namespace datamodel {
 			std::string value = helpers::expand_path (val, "SERIAL_VERSIONID").asString();
 			if (value.find(myversion) != 0) {
 //			if (myversion != value) {
-				std::cerr << "WARNING: Serialization version mismatch! Expected " 
+				std::cerr << "WARNING: Serialization version mismatch! Expected "
 					<< myversion << " and got " << value << std::endl;
 			}
 		}
@@ -141,7 +141,7 @@ namespace datamodel {
 		std::string myversion;
 	};
 
-#define JSONIZE(_class, version, ...) JSONIZE_AS(#_class, _class, version, __VA_ARGS__) 
+#define JSONIZE(_class, version, ...) JSONIZE_AS(#_class, _class, version, __VA_ARGS__)
 
 #define JSONIZE_AS(_perl_class, _class, version, ...) public: _class () {  \
 	make_serializers () ; \
@@ -170,8 +170,8 @@ namespace datamodel {
 	class Serializable {
 	public:
 
-		/** 
-		 * Slow defaults. Override if necessary. 
+		/**
+		 * Slow defaults. Override if necessary.
 		 */
 		virtual size_t byte_size() {
 			std::ostringstream oss;
@@ -180,8 +180,8 @@ namespace datamodel {
 			return s.size();
 		}
 
-		/** 
-		 * Slow defaults. Override if necessary. 
+		/**
+		 * Slow defaults. Override if necessary.
 		 */
 		virtual void byte_serialize ( void * buffer, size_t size ) {
 			ASSERT (size >= sizeof(size_t));
@@ -193,8 +193,8 @@ namespace datamodel {
 			memcpy(((size_t *)buffer) + 1, s.c_str(), s.size());
 		}
 
-		/** 
-		 * Slow defaults. Override if necessary. 
+		/**
+		 * Slow defaults. Override if necessary.
 		 */
 		virtual void byte_deserialize(void * source, size_t nbytes) {
 			ASSERT (nbytes >= sizeof(size_t) );
@@ -220,43 +220,43 @@ namespace datamodel {
 	public:
 		/**
 		 * since we generate the default constructor (Serializable objects must
-		 * have one so we can generate classes automatically, we supply a virtual 
+		 * have one so we can generate classes automatically, we supply a virtual
 		 * function to provide default values.
 		 */
 		virtual void defaults () {}
 		virtual ~Serializable () {
 			reset_serializers();
 		}
-		
+
 		void archive (Json::Value & root) const {
-			pre_serialize (); 
-			size_t itemcount = my_serializers.size(); 
+			pre_serialize ();
+			size_t itemcount = my_serializers.size();
 			root = json_value;
 			for (size_t j = 0; j < itemcount; ++j) {
-				my_serializers[j]->write(root);	
+				my_serializers[j]->write(root);
 			}
 		}
 
-		void archive ( std::ostream& os ) const {	
-			size_t itemcount = my_serializers.size(); 
+		void archive ( std::ostream& os ) const {
+			size_t itemcount = my_serializers.size();
 			Json::Value root;
 			archive(root);
 			Json::StyledStreamWriter w;
 			w.write(os, root);
-		}										
-
-		void unarchive ( Json::Value & root ) {	
-			size_t itemcount = my_serializers.size(); 
-			for (size_t j = 0; j < itemcount; ++j) 
-				my_serializers[j]->read(root); 
-			json_value = root;
-			post_serialize (); 
 		}
 
-		void unarchive ( std::istream& is ) {	
-			size_t itemcount = my_serializers.size(); 
+		void unarchive ( Json::Value & root ) {
+			size_t itemcount = my_serializers.size();
+			for (size_t j = 0; j < itemcount; ++j)
+				my_serializers[j]->read(root);
+			json_value = root;
+			post_serialize ();
+		}
+
+		void unarchive ( std::istream& is ) {
+			size_t itemcount = my_serializers.size();
 			Json::Value root;
-			Json::Reader r;						
+			Json::Reader r;
 			r.parse(is, root);
 			unarchive(root);
 		}
@@ -268,7 +268,7 @@ namespace datamodel {
 		virtual void make_serializers() = 0;
 
 		void reset_serializers () {
-			for (std::vector < ItemSerializer * >::iterator it = my_serializers.begin(); 
+			for (std::vector < ItemSerializer * >::iterator it = my_serializers.begin();
 				it != my_serializers.end(); ++it) {
 					delete  (*it);
 			}
@@ -277,7 +277,7 @@ namespace datamodel {
 
 		std::vector<ItemSerializer*> my_serializers; ///< filled by JSONIZE macro
 		Json::Value json_value;  ///< we keep a copy of our JSON representation
-		
+
 	};
 
 	inline std::ostream & operator<< (std::ostream& os, const Serializable & val) {
@@ -302,19 +302,19 @@ namespace datamodel {
 
 namespace bsp {
 
-	template <> 
+	template <>
 	inline size_t SharedSerializable<datamodel::Serializable>::serialized_size() {
 		datamodel::Serializable * thiz = (datamodel::Serializable*)valadr;
 		return thiz->byte_size();
 	}
 
-	template <> 
+	template <>
 	inline void SharedSerializable<datamodel::Serializable>::serialize (void * target, size_t nbytes) {
 		datamodel::Serializable * thiz = (datamodel::Serializable*)valadr;
 		thiz->byte_serialize(target, nbytes);
 	}
 
-	template <> 
+	template <>
 	inline void SharedSerializable<datamodel::Serializable>::deserialize(void * source, size_t nbytes) {
 		datamodel::Serializable * thiz = (datamodel::Serializable*)valadr;
 		thiz->byte_deserialize(source, nbytes);

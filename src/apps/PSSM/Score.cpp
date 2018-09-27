@@ -33,9 +33,9 @@ struct Motif_Hit : public datamodel::Serializable {
 	std::string accession;
 	std::string sequence;
 	std::string strand;
-	
+
 	int _pssm_idx;
-	
+
 	void defaults() {
 		five_prime_pos = -1;
 		three_prime_pos = -1;
@@ -45,10 +45,10 @@ struct Motif_Hit : public datamodel::Serializable {
 		pvalue = DBL_MAX;
 		score = 0;
 	}
-	
+
 	JSONIZE_AS (
-		"Datatypes::Motifs::Motif_Hit", 
-		Motif_Hit, 1, 
+		"Datatypes::Motifs::Motif_Hit",
+		Motif_Hit, 1,
 		S_STORE(name, JSONString<>)
 		S_STORE(accession, JSONString<>)
 		S_STORE(sequence, JSONString<>)
@@ -61,7 +61,7 @@ struct Motif_Hit : public datamodel::Serializable {
 };
 
 inline bool operator==(const Motif_Hit & m1, const Motif_Hit & m2) {
-	return m1.name == m2.name && 
+	return m1.name == m2.name &&
 	( (m1.five_prime_pos == m2.five_prime_pos && m1.three_prime_pos == m2.three_prime_pos) ||
 	  (m1.three_prime_pos == m2.five_prime_pos && m1.five_prime_pos == m2.three_prime_pos) );
 }
@@ -74,7 +74,7 @@ struct Motif_Presence : public datamodel::Serializable {
 	std::string pssm_name;
 	std::string pssm_accession;
 	std::string sequence_name;
-	
+
 	void defaults() {
 		sequence_name = "";
 		pssm_name = "";
@@ -82,10 +82,10 @@ struct Motif_Presence : public datamodel::Serializable {
 		pvalue = DBL_MAX;
 		test = "none";
 	}
-	
+
 	JSONIZE_AS (
-		"Datatypes::Motifs::Motif_Presence", 
-		Motif_Presence, 1, 
+		"Datatypes::Motifs::Motif_Presence",
+		Motif_Presence, 1,
 		S_STORE(test, JSONString<>)
 		S_STORE(sequence_name, JSONString<>)
 		S_STORE(pssm_name, JSONString<>)
@@ -108,7 +108,7 @@ public:
 		CONTEXT_SHARED_INIT(pos, int);
 		CONTEXT_SHARED_INIT(current_sequence, dnastring);
 	}
-	
+
 	static void set_parameters (boost::program_options::variables_map & vm) {
 		scoretype = vm["scoretype"].as<std::string>();
 		profiles = vm["profiles"].as<std::string>();
@@ -149,7 +149,7 @@ public:
 		minscores.clear();
 		histograms_read = false;
 	}
-	
+
 protected:
 
 	/** Problem splitting (N/P pssms per processor) */
@@ -170,7 +170,7 @@ protected:
 
 	/** Chunk size for reading the input */
 	static size_t fragmentsize;
-	
+
 	/** the minimum p-value for a match */
 	static double pval;
 
@@ -191,27 +191,27 @@ protected:
 
 	void run() {
 		BSP_SCOPE(PSSM_Scorer);
-		
+
 		start_progress("Reading Histograms...", N-1);
 
 		BSP_BEGIN();
 		P = bsp_nprocs();
 		n = ICD(N, P);
 		p = bsp_pid();
-		
+
 		my_start = p*n;
 		my_end = (p+1)*n - 1;
 		if (my_end >= N) {
 			my_end = N-1;
 		}
 
-		BSP_END();	
+		BSP_END();
 		end_progress();
-		
+
 		datamodel::TranslatingInputStream<8> stream (*in, "ACGTN");
 		datamodel::WindowedInputStream<8> winstr ( overlap_size );
 		winstr.set_input ( stream );
-		
+
 		pos = 0;
 		for(int j = 0; j < N; ++j) {
 			g_scores_collected[j] = 0;
@@ -233,8 +233,8 @@ protected:
 			BSP_BROADCAST(current_sequence, 0);
 			BSP_BROADCAST(pos, 0);
 			BSP_BEGIN();
-			
-			if (current_sequence.size() > 0) {				
+
+			if (current_sequence.size() > 0) {
 				for (int j = my_start; j <= my_end; ++j) {
 					pssm & p = g_pssms[j];
 					size_t len = p.get_length();
@@ -249,10 +249,10 @@ protected:
 								pssmhistogram & px (*profile_cache[j]);
 								dnastring testvec;
 								current_sequence.extract_substring (k, k + len-1, testvec );
-								
+
 								long int fpp, tpp;
 								std::string strnd;
-								
+
 								if (strand == 0) {
 									strnd = "positive";
 									fpp = pos+k;
@@ -262,7 +262,7 @@ protected:
 									fpp = (long) (pos + (current_sequence.size() - 1 - k ));
 									tpp = (long) (pos + (current_sequence.size() - 1 - (k+len-1) ) );
 								}
-								
+
 								Motif_Hit hit;
 								hit._pssm_idx = j;
 								hit.name = p.get_name();
@@ -273,7 +273,7 @@ protected:
 								hit.score = score;
 								hit.pvalue = px.right_tail(score);
 								hit.sequence = datamodel::unwrap_sequence<8>(testvec, "ACGT", 'N');
-								
+
 								g_motif_queue.push (hit);
 							}
 						}
@@ -284,7 +284,7 @@ protected:
 					}
 				}
 			}
-			
+
 			BSP_END();
 			if ( ::bsp_pid() == 0 && read > 0 ) {
 				end_progress();
@@ -303,8 +303,8 @@ size_t PSSM_Scorer::fragmentsize, PSSM_Scorer::overlap_size;
 bool PSSM_Scorer::histograms_read = false;
 
 struct _sorter {
-	bool operator() (Motif_Hit const & i, Motif_Hit const & j) { 
-		return i.pvalue < j.pvalue; 
+	bool operator() (Motif_Hit const & i, Motif_Hit const & j) {
+		return i.pvalue < j.pvalue;
 	}
 } sorter;
 
@@ -317,10 +317,10 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 	int verbosity = vm["verbosity"].as<int>();
 	vector<string> paths;
 	TextIO::split(p, paths, ":");
-        
+
 	bsp::Runner<PSSM_Scorer> r;
 	r.set_parameters(vm);
-	
+
 	for (size_t j = 0; j < paths.size(); ++j) {
 		try {
 			path inpath = paths[j];
@@ -343,7 +343,7 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 				throw std::runtime_error("Input sequence file was not found.");
 			}
 
-			ifstream f (inpath.c_str());
+            std::ifstream f (inpath.c_str());
 
 			r.set_sequence_input(f);
 			r.run();
@@ -357,7 +357,7 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 				motifs[hit._pssm_idx].push_back(hit);
 			}
 
-			ofstream fout((inpath.string() + ".motifs.json").c_str());
+            std::ofstream fout((inpath.string() + ".motifs.json").c_str());
 			bool printed_one = false;
 			fout << "[" << endl;
 
@@ -375,7 +375,7 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 					int start = min(hit.three_prime_pos, hit.five_prime_pos);
 					int end = max(hit.three_prime_pos, hit.five_prime_pos);
 
-					interval= make_pair(discrete_interval<int>::closed(start, end), hit);	
+					interval= make_pair(discrete_interval<int>::closed(start, end), hit);
 					interval_map<int, Motif_Hit >::const_iterator it = hits.find ( interval.first );
 					if (it == hits.end()) {
 						hits.insert (interval);
@@ -396,7 +396,7 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 					++hitcount2;
 				}
 				if (verbosity > 1) {
-					cerr << "Hits: " << hits_before << ", after overlap removal: " << hitcount2 << endl;					
+					cerr << "Hits: " << hits_before << ", after overlap removal: " << hitcount2 << endl;
 				}
 
 				// binomial test p-value filtering
@@ -430,10 +430,10 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 						motif_cutoff = 0;
 					}
 					if (verbosity > 1) {
-						cerr << " final pval: " << min_pval << " accept: " << motif_cutoff << " (" << binom_pval << ")" << endl;						
+						cerr << " final pval: " << min_pval << " accept: " << motif_cutoff << " (" << binom_pval << ")" << endl;
 					}
 
-					motifs[jj].resize(motif_cutoff);					
+					motifs[jj].resize(motif_cutoff);
 				} else {
 					motif_cutoff = motifs[jj].size();
 				}
@@ -451,10 +451,10 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 					Motif_Presence p;
 					if (binom_pval > 0) {
 						p.test = "binomial";
-						p.pvalue = min_pval;						
+						p.pvalue = min_pval;
 					} else {
 						p.test = "none";
-						p.pvalue = 1;						
+						p.pvalue = 1;
 					}
 					p.sequence_name = inpath.string();
 					p.pssm_name = g_pssms[jj].get_name();
@@ -465,12 +465,12 @@ void PSSM_ScoreApp::run (boost::program_options::variables_map & vm) {
 						fout << "," << endl;
 					}
 					p.archive(fout);
-					printed_one = true;	
+					printed_one = true;
 				}
 				if (verbosity > 1) {
-					cerr << "Hits written for " << g_pssms[jj].get_name() << "/" << g_pssms[jj].get_accession() << ": " << motifs[jj].size() << endl;					
+					cerr << "Hits written for " << g_pssms[jj].get_name() << "/" << g_pssms[jj].get_accession() << ": " << motifs[jj].size() << endl;
 				}
-			}		
+			}
 			fout << "]" << endl;
 		} catch (std::exception e) {
 			cerr << e.what() << endl;
